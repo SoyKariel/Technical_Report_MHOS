@@ -5,13 +5,11 @@
 }
 
 @media print {
-  /* 1. Definimos el tamaño de papel y eliminamos márgenes físicos del navegador */
   @page {
     size: letter;
-    margin: 0mm; /* Eliminamos el margen del sistema para controlar nosotros el espacio */
+    margin: 0mm;
   }
 
-  /* 2. Forzamos que todo el diseño use el modelo de caja de borde para no sumar pixeles extra */
   * {
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
@@ -22,48 +20,58 @@
     display: none !important;
   }
 
-  /* 3. El contenedor principal con márgenes internos controlados */
   .print-only {
     display: block !important;
     width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
     background-color: white !important;
   }
 
   .print-page {
-    width: 216mm; /* Ancho real de hoja carta */
-    height: 279mm; /* Alto real de hoja carta */
+    width: 216mm;
+    min-height: 279mm;
     position: relative;
-    overflow: hidden; /* Evita que el contenido "empuje" la hoja hacia abajo */
   }
 
-  /* 4. Aquí ajustamos los márgenes del contenido para que no toquen los bordes */
   .content-padding {
-    padding-left: 15mm;
-    padding-right: 15mm;
-    padding-top: 5mm; 
-    padding-bottom: 25mm; /* Espacio extra abajo para que no choque con el footer */
+    padding: 5mm 15mm 25mm 15mm;
   }
 
-  /* 5. Aseguramos que las imágenes de header y footer ocupen el ancho total */
+  .footer-fixed {
+    position: relative;
+    width: 100%;
+    margin-top: 20px;
+  }
+
+  /* Control de saltos de página */
+  .avoid-break {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    display: block;
+    margin-bottom: 10px;
+  }
+
   header img, footer img {
     width: 100%;
     display: block;
   }
 
-  .footer-fixed {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-  }
-
-  /* 6. Evitar que las tablas o secciones se corten feo entre páginas */
   .avoid-break {
-    break-inside: avoid;
-    page-break-inside: avoid;
-    margin-bottom: 10px;
-  }
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  display: block;
+  position: relative;
+}
+
+.seccion-firmas {
+  break-inside: avoid !important;
+  page-break-inside: avoid !important;
+  page-break-after: auto;
+  margin-top: 30px;
+}
+
+.print-page {
+  width: 216mm;
+  height: auto !important; 
+  min-height: 279mm;
+}
 }

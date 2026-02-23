@@ -27,10 +27,13 @@ const checklistAire = [
 ];
 
 const emptyForm = {
-  cliente: "", direccion: "", contrato: "", partida: "", servicio: "",
+  cliente: "", direccion: "", contrato: "", partida: "", servicio: "MTTO. Preventivo",
   folio: "Cargando...", fecha: "", checklist: {},
   fotosAntes: [], fotosDurante: [], fotosDespues: [], fotosEtiqueta: [],
-  equipos: [{ equipo: "", marca: "", modelo: "", serie: "" }]
+  equipos: [{ equipo: "", marca: "", modelo: "", serie: "", ssm: "", location: "" }],
+  medicion: [{ equipo: "", marca: "", modelo: "", serie: "" }],
+  falla: "", condiciones: "", trabajos: "",
+  refacciones: [{ descripcion: "", cantidad: "" }]
 };
 
 export default function ServiceReportPage() {
@@ -63,15 +66,15 @@ export default function ServiceReportPage() {
 
   const handleInput = (field, value) => setForm(prev => ({ ...prev, [field]: value }));
   const handleChecklist = (item) => setForm(prev => ({ ...prev, checklist: { ...prev.checklist, [item]: !prev.checklist?.[item] } }));
-  const addEquipo = () => setForm(prev => ({ ...prev, equipos: [...prev.equipos, { equipo: "", marca: "", modelo: "", serie: "" }] }));
   
-  const updateEquipo = (i, field, value) => {
-    const copy = [...form.equipos];
+  // Handlers Dinámicos para listas
+  const addItem = (tipo, defaultObj) => setForm(prev => ({ ...prev, [tipo]: [...prev[tipo], defaultObj] }));
+  const updateItem = (i, tipo, field, value) => {
+    const copy = [...form[tipo]];
     copy[i][field] = value;
-    setForm({ ...form, equipos: copy });
+    setForm({ ...form, [tipo]: copy });
   };
-  
-  const removeEquipo = (i) => setForm(prev => ({ ...prev, equipos: prev.equipos.filter((_, idx) => idx !== i) }));
+  const removeItem = (i, tipo) => setForm(prev => ({ ...prev, [tipo]: prev[tipo].filter((_, idx) => idx !== i) }));
 
   const handleFotos = (files, tipo) => {
     const nuevas = Array.from(files);
@@ -110,7 +113,9 @@ export default function ServiceReportPage() {
       const { error } = await supabase.from('reportes_servicio').insert([{
         folio: form.folio, fecha: form.fecha, cliente: form.cliente,
         direccion: form.direccion, contrato: form.contrato, partida: form.partida,
-        equipos: form.equipos, checklist: form.checklist,
+        servicio: form.servicio, falla: form.falla, condiciones: form.condiciones,
+        trabajos: form.trabajos, equipos: form.equipos, medicion: form.medicion,
+        refacciones: form.refacciones, checklist: form.checklist,
         fotos_antes: antes, fotos_durante: durante, fotos_despues: despues,
         foto_etiqueta: etiqueta[0] || null
       }]);
@@ -130,7 +135,7 @@ export default function ServiceReportPage() {
 
           {/* Formulario de Entrada */}
           <div className="bg-white rounded-xl p-6 mb-6 shadow-md text-black">
-            <h2 className="text-xl font-bold mb-4 text-green-900 underline">DATOS DEL REPORTE</h2>
+            <h2 className="text-xl font-bold mb-4 text-green-900 underline uppercase">Datos del Reporte</h2>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-xs font-bold text-gray-700 uppercase">Folio Secuencial</label>
@@ -143,41 +148,82 @@ export default function ServiceReportPage() {
             </div>
           </div>
 
+          <div className="bg-white p-6 rounded-xl shadow-md text-black mb-6">
+  <h3 className="font-bold mb-3 text-green-800 uppercase text-sm border-b">Información del Cliente</h3>
+  <input placeholder="Cliente" value={form.cliente} onChange={e=>handleInput("cliente", e.target.value)} className="w-full border p-2 rounded mb-3"/>
+  <input placeholder="Dirección" value={form.direccion} onChange={e=>handleInput("direccion", e.target.value)} className="w-full border p-2 rounded mb-3"/>
+  <div className="grid grid-cols-2 gap-3 mb-4">
+    <input placeholder="Contrato" value={form.contrato} onChange={e=>handleInput("contrato", e.target.value)} className="border p-2 rounded"/>
+    <input placeholder="Partida" value={form.partida} onChange={e=>handleInput("partida", e.target.value)} className="border p-2 rounded"/>
+  </div>
+  <label className="block text-xs font-bold text-gray-600 mb-1 uppercase">Tipo de Servicio</label>
+  <select value={form.servicio} onChange={e=>handleInput("servicio", e.target.value)} className="w-full border p-2 rounded bg-gray-50 font-bold">
+    <option>MTTO. Preventivo</option>
+    <option>MTTO. Correctivo</option>
+    <option>Garantía</option>
+    <option>Diagnostico</option>
+    <option>Instalación y capacitación</option>
+  </select>
+</div>
+
           <div className="grid md:grid-cols-3 gap-6">
             <div className="md:col-span-2 space-y-6">
-              {/* Información Cliente */}
-              <div className="bg-white p-6 rounded-xl shadow-md text-black">
-                <h3 className="font-bold mb-3 text-green-800 uppercase">Información del Cliente</h3>
-                <input placeholder="Cliente" value={form.cliente} onChange={e=>handleInput("cliente", e.target.value)} className="w-full border p-2 rounded mb-3 text-black placeholder-gray-400"/>
-                <input placeholder="Dirección / Unidad" value={form.direccion} onChange={e=>handleInput("direccion", e.target.value)} className="w-full border p-2 rounded mb-3 text-black placeholder-gray-400"/>
-                <div className="grid grid-cols-2 gap-3">
-                  <input placeholder="Contrato" value={form.contrato} onChange={e=>handleInput("contrato", e.target.value)} className="border p-2 rounded text-black placeholder-gray-400"/>
-                  <input placeholder="Partida" value={form.partida} onChange={e=>handleInput("partida", e.target.value)} className="border p-2 rounded text-black placeholder-gray-400"/>
-                </div>
-              </div>
 
-              {/* Equipos */}
+              {/* Datos del Equipo */}
               <div className="bg-white p-6 rounded-xl shadow-md text-black">
-                <h3 className="font-bold mb-3 text-green-800 uppercase">Equipos Atendidos</h3>
+                <h3 className="font-bold mb-3 text-green-800 uppercase">Datos del Equipo Atendido</h3>
                 {form.equipos.map((eq, i) => (
                   <div key={i} className="border p-4 rounded mb-4 bg-gray-50 relative border-gray-200">
                     <div className="grid grid-cols-2 gap-2">
-                      <input placeholder="Equipo" value={eq.equipo} onChange={e=>updateEquipo(i, "equipo", e.target.value)} className="border p-2 rounded text-black"/>
-                      <input placeholder="Marca" value={eq.marca} onChange={e=>updateEquipo(i, "marca", e.target.value)} className="border p-2 rounded text-black"/>
-                      <input placeholder="Modelo" value={eq.modelo} onChange={e=>updateEquipo(i, "modelo", e.target.value)} className="border p-2 rounded text-black"/>
-                      <input placeholder="Serie" value={eq.serie} onChange={e=>updateEquipo(i, "serie", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Equipo" value={eq.equipo} onChange={e=>updateItem(i, "equipos", "equipo", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Marca" value={eq.marca} onChange={e=>updateItem(i, "equipos", "marca", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Modelo" value={eq.modelo} onChange={e=>updateItem(i, "equipos", "modelo", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Número de Serie" value={eq.serie} onChange={e=>updateItem(i, "equipos", "serie", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Folio SSM" value={eq.ssm} onChange={e=>updateItem(i, "equipos", "ssm", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Ubicación" value={eq.location} onChange={e=>updateItem(i, "equipos", "location", e.target.value)} className="border p-2 rounded text-black"/>
                     </div>
-                    {form.equipos.length > 1 && <button onClick={()=>removeEquipo(i)} className="text-red-600 text-xs mt-2 underline font-bold">Quitar Equipo</button>}
+                    {form.equipos.length > 1 && <button onClick={()=>removeItem(i, "equipos")} className="text-red-600 text-xs mt-2 underline font-bold">Quitar Equipo</button>}
                   </div>
                 ))}
-                <button onClick={addEquipo} className="text-blue-700 font-bold text-sm hover:underline">+ AGREGAR OTRO EQUIPO</button>
+                <button onClick={()=>addItem("equipos", { equipo: "", marca: "", modelo: "", serie: "", ssm: "", location: "" })} className="text-blue-700 font-bold text-sm hover:underline">+ AGREGAR OTRO EQUIPO</button>
               </div>
+
+              {/* Equipo de Medición */}
+              <div className="bg-white p-6 rounded-xl shadow-md text-black">
+                <h3 className="font-bold mb-3 text-green-800 uppercase">Equipo de Medición Utilizado</h3>
+                {form.medicion.map((med, i) => (
+                  <div key={i} className="border p-4 rounded mb-4 bg-gray-50 relative border-gray-200">
+                    <div className="grid grid-cols-2 gap-2">
+                      <input placeholder="Equipo" value={med.equipo} onChange={e=>updateItem(i, "medicion", "equipo", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Marca" value={med.marca} onChange={e=>updateItem(i, "medicion", "marca", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Modelo" value={med.modelo} onChange={e=>updateItem(i, "medicion", "modelo", e.target.value)} className="border p-2 rounded text-black"/>
+                      <input placeholder="Número de Serie" value={med.serie} onChange={e=>updateItem(i, "medicion", "serie", e.target.value)} className="border p-2 rounded text-black"/>
+                    </div>
+                    {form.medicion.length > 1 && <button onClick={()=>removeItem(i, "medicion")} className="text-red-600 text-xs mt-2 underline font-bold">Quitar Equipo de Medición</button>}
+                  </div>
+                ))}
+                <button onClick={()=>addItem("medicion", { equipo: "", marca: "", modelo: "", serie: "" })} className="text-blue-700 font-bold text-sm hover:underline">+ AGREGAR OTRO EQUIPO DE MEDICIÓN</button>
+              </div>
+
+              {/* Refacciones */}
+              <div className="bg-white p-6 rounded-xl shadow-md text-black">
+                <h3 className="font-bold mb-3 text-green-800 uppercase">Refacciones / Accesorios Utilizados</h3>
+                {form.refacciones.map((ref, i) => (
+                  <div key={i} className="flex gap-2 mb-2">
+                    <input placeholder="Descripción de la refacción o equipo" value={ref.descripcion} onChange={e=>updateItem(i, "refacciones", "descripcion", e.target.value)} className="flex-grow border p-2 rounded text-sm"/>
+                    <input placeholder="Cant." value={ref.cantidad} onChange={e=>updateItem(i, "refacciones", "cantidad", e.target.value)} className="w-20 border p-2 rounded text-sm text-center"/>
+                    {form.refacciones.length > 1 && <button onClick={()=>removeItem(i, "refacciones")} className="text-red-500 font-bold px-2">×</button>}
+                  </div>
+                ))}
+                <button onClick={()=>addItem("refacciones", { descripcion: "", cantidad: "" })} className="text-blue-700 font-bold text-xs mt-2 underline">+ AGREGAR REFACCIÓN</button>
+              </div>
+
             </div>
 
-            {/* Checklist */}
+            {/* Checklist Lateral */}
             <div className="bg-white p-6 rounded-xl shadow-md h-fit text-black">
               <h3 className="font-bold mb-3 text-green-800 uppercase text-center border-b pb-2">Anexo Técnico</h3>
-              <div className="max-h-[500px] overflow-y-auto pr-2">
+              <div className="max-h-[800px] overflow-y-auto pr-2">
                 {checklistAire.map((item, idx)=>(
                   <label key={idx} className="flex justify-between items-center py-2 border-b text-sm cursor-pointer hover:bg-gray-50 text-gray-800">
                     <span>{item}</span>
@@ -187,6 +233,41 @@ export default function ServiceReportPage() {
               </div>
             </div>
           </div>
+
+          {/* SECCIÓN DE REPORTE TÉCNICO - AHORA ANCHO TOTAL */}
+          <div className="bg-white p-6 rounded-xl shadow-md space-y-6 text-black mt-6">
+  <h3 className="font-bold text-green-800 uppercase border-b pb-2">Diagnóstico y Reporte Técnico</h3>
+  
+  <div>
+    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Falla reportada</label>
+    <textarea 
+      placeholder="Describa el problema reportado por el cliente o la falla que se encontró durante la revisión." 
+      value={form.falla} 
+      onChange={e=>handleInput("falla", e.target.value)} 
+      className="w-full border p-3 rounded min-h-[80px]"
+    />
+  </div>
+
+  <div>
+    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Condiciones iniciales del equipo</label>
+    <textarea 
+      placeholder="¿En qué estado se encontró el equipo al llegar?" 
+      value={form.condiciones} 
+      onChange={e=>handleInput("condiciones", e.target.value)} 
+      className="w-full border p-3 rounded min-h-[80px]"
+    />
+  </div>
+
+  <div>
+    <label className="block text-xs font-bold text-gray-600 uppercase mb-1">Trabajos realizados / Notas / Observaciones / Recomendaciones</label>
+    <textarea 
+      placeholder="Detalle completo de la intervención, mantenimiento o reparación efectuada, así como cualquier recomendación para el cliente." 
+      value={form.trabajos} 
+      onChange={e=>handleInput("trabajos", e.target.value)} 
+      className="w-full border p-3 rounded min-h-[200px]"
+    />
+  </div>
+</div>
 
           {/* Fotos */}
           <div className="bg-white p-6 rounded-xl shadow-md mt-6 text-black">
@@ -209,7 +290,7 @@ export default function ServiceReportPage() {
             </div>
           </div>
 
-          {/* Botones - Texto Blanco */}
+          {/* Botones Finales */}
           <div className="flex justify-center gap-6 mt-12 pb-10">
             <button 
               onClick={guardarReporte} 
@@ -229,79 +310,167 @@ export default function ServiceReportPage() {
         </div>
       </div>
 
-      {/* --- VISTA DE IMPRESIÓN (PDF) --- */}
-      <div className="print-only">
-        <div className="print-page">
-          <header><img src="/header.PNG" className="w-full" /></header>
-          <div className="content-padding text-black">
-            <div className="flex justify-between items-end border-b-2 border-black pb-1 mb-4">
-              <div>
-                <h1 className="text-xl font-bold uppercase leading-tight text-black">Orden/Reporte de Servicio</h1>
-                <p className="text-[8px] text-black">FORMATO: MH-MPM-02-01-Folio-Reporte de Servicio</p>
-              </div>
-              <div className="text-right">
-                <p className="text-red-600 font-bold text-lg leading-none">{form.folio}</p>
-                <p className="text-[9px] font-bold text-black">Fecha: {form.fecha}</p>
-              </div>
+      {/* VISTA PDF */}
+<div className="print-only">
+  <div className="print-page">
+    <header><img src="/header.PNG" className="w-full" /></header>
+    <div className="content-padding text-black">
+      
+      <div className="avoid-break">
+        <div className="flex justify-between items-end border-b-2 border-black pb-1 mb-4">
+          <div>
+            <h1 className="text-xl font-bold uppercase leading-tight">Reporte de Servicio</h1>
+            <p className="text-[10px] font-bold mt-1 uppercase">SERVICIO: {form.servicio}</p>
+          </div>
+          <div className="text-right">
+            <p className="text-red-600 font-bold text-lg leading-none">{form.folio}</p>
+            <p className="text-[9px] font-bold">Fecha: {form.fecha}</p>
+          </div>
+        </div>
+
+        <table className="w-full text-[10px] mb-4 border border-black border-collapse">
+          <tbody>
+            <tr>
+              <td className="font-bold p-1 bg-gray-100 border border-black w-24">CLIENTE:</td>
+              <td className="p-1 border border-black">{form.cliente}</td>
+              <td className="font-bold p-1 bg-gray-100 border border-black w-24">CONTRATO:</td>
+              <td className="p-1 border border-black">{form.contrato}</td>
+            </tr>
+            <tr>
+              <td className="font-bold p-1 bg-gray-100 border border-black">DIRECCIÓN:</td>
+              <td className="p-1 border border-black">{form.direccion}</td>
+              <td className="font-bold p-1 bg-gray-100 border border-black">PARTIDA:</td>
+              <td className="p-1 border border-black">{form.partida}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div className="avoid-break">
+        <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Datos del Equipo Atendido</h3>
+        <table className="w-full border-collapse border border-black text-[8px] mb-4 text-center">
+          <thead>
+            <tr className="bg-gray-100">
+              <th className="border border-black p-1">EQUIPO</th>
+              <th className="border border-black p-1">MARCA</th>
+              <th className="border border-black p-1">MODELO</th>
+              <th className="border border-black p-1">SERIE</th>
+            </tr>
+          </thead>
+          <tbody>
+            {form.equipos.map((eq, i) => (
+              <tr key={i}>
+                <td className="border border-black p-1 uppercase">{eq.equipo}</td>
+                <td className="border border-black p-1 uppercase">{eq.marca}</td>
+                <td className="border border-black p-1 uppercase">{eq.modelo}</td>
+                <td className="border border-black p-1 uppercase">{eq.serie}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4 mb-4">
+        <div className="avoid-break">
+          <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Anexo Técnico (Checklist)</h3>
+          <div className="border border-black p-2 min-h-[180px]">
+            {checklistAire.filter(item => form.checklist[item]).map((item, i) => (
+              <div key={i} className="text-[7px] border-b border-gray-200 py-1 uppercase font-medium">• {item}</div>
+            ))}
+            {checklistAire.filter(item => form.checklist[item]).length === 0 && <p className="text-[8px] italic text-gray-400">Sin actividades marcadas.</p>}
+          </div>
+        </div>
+
+        <div className="space-y-4">
+          <div className="avoid-break">
+            <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Diagnóstico y Notas</h3>
+            <div className="border border-black p-2 text-[8px] min-h-[80px]">
+              <p className="mb-1"><strong>Falla Reportada:</strong> {form.falla}</p>
+              <p className="mb-1"><strong>Condiciones Iniciales:</strong> {form.condiciones}</p>
+              <p><strong>Trabajos Realizados y/o recomendaciones:</strong> {form.trabajos}</p>
             </div>
-
-            <table className="w-full text-[10px] mb-4 text-black">
+          </div>
+          <div className="avoid-break">
+            <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Refacciones Utilizadas</h3>
+            <table className="w-full border-collapse border border-black text-[8px]">
               <tbody>
-                <tr className="h-6">
-                  <td className="font-bold w-24 uppercase">Cliente:</td>
-                  <td className="border-b border-black">{form.cliente}</td>
-                  <td className="font-bold w-32 pl-4 uppercase">Contrato:</td>
-                  <td className="border-b border-black">{form.contrato}</td>
-                </tr>
-                <tr className="h-6">
-                  <td className="font-bold uppercase">Dirección:</td>
-                  <td className="border-b border-black">{form.direccion}</td>
-                  <td className="font-bold pl-4 uppercase">Partida:</td>
-                  <td className="border-b border-black">{form.partida}</td>
-                </tr>
-              </tbody>
-            </table>
-
-            <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-3 uppercase text-center">EVIDENCIA FOTOGRÁFICA</h3>
-
-            <div className="grid grid-cols-4 gap-2">
-              {['Antes', 'Durante', 'Despues', 'Etiqueta'].map(tipo => (
-                <div key={tipo} className="avoid-break text-black">
-                  <p className="font-bold text-[8px] mb-1 text-center uppercase border-b border-black pb-1">
-                    {tipo === 'Etiqueta' ? 'ETIQUETA' : `${tipo.toUpperCase()} DEL SERVICIO`}
-                  </p>
-                  <div className="space-y-1">
-                    {form[`fotos${tipo}`]?.slice(0, tipo === 'Etiqueta' ? 1 : 2).map((f, i) => (
-                      <div key={i} className="border border-black aspect-[4/3] flex items-center justify-center overflow-hidden bg-gray-50">
-                        <img src={URL.createObjectURL(f)} className="object-contain w-full h-full" />
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            <table className="w-full border-collapse border border-black text-[8px] mt-8 text-center text-black">
-              <tbody>
-                <tr className="h-20">
-                  <td className="border border-black p-2 w-1/4 align-bottom">
-                    <div className="border-t border-black pt-1">Ing/Tec realizó servicio<br/>Firma Entrega</div>
-                  </td>
-                  <td className="border border-black p-2 w-1/4 align-bottom">
-                    <div className="border-t border-black pt-1">Director/Administrador<br/>Recibe/Autoriza</div>
-                  </td>
-                  <td className="border border-black p-2 w-1/4 align-bottom">
-                    <div className="font-bold uppercase">Ing. Adrián Martínez Robles</div>
-                    <div className="border-t border-black pt-1">Valida</div>
-                  </td>
-                  <td className="border border-black p-2 w-1/4 align-top text-gray-400 italic">Sello de la Unidad</td>
-                </tr>
+                {form.refacciones.map((ref, i) => (
+                  <tr key={i}>
+                    <td className="border border-black p-1">{ref.descripcion}</td>
+                    <td className="border border-black p-1 w-10 text-center">{ref.cantidad}</td>
+                  </tr>
+                ))}
               </tbody>
             </table>
           </div>
-          <footer className="footer-fixed"><img src="/footer.PNG" className="w-full" /></footer>
+          <div className="avoid-break">
+            <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Equipo de Medición</h3>
+            <table className="w-full border-collapse border border-black text-[7px]">
+              <tbody>
+                {form.medicion.map((med, i) => (
+                  <tr key={i}>
+                    <td className="border border-black p-1 uppercase">{med.equipo} - Número de Serie: {med.serie}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
+
+      {/* Evidencia Fotográfica Corregida */}
+<h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-2 uppercase text-center">Evidencia Fotográfica</h3>
+
+<div className="space-y-4">
+  {['Antes', 'Durante', 'Despues', 'Etiqueta'].map(tipo => (
+    <div key={tipo} className="avoid-break">
+      {/* Título de la etapa (Solo aparece si hay fotos) */}
+      {form[`fotos${tipo}`]?.length > 0 && (
+        <>
+          <p className="text-[8px] font-bold uppercase mb-1 border-b border-gray-300">{tipo}</p>
+          <div className="grid grid-cols-3 gap-2 mb-3">
+            {form[`fotos${tipo}`].map((foto, idx) => (
+              <div key={idx} className="border border-black aspect-video bg-gray-50 flex items-center justify-center overflow-hidden">
+                <img 
+                  src={URL.createObjectURL(foto)} 
+                  className="object-contain w-full h-full" 
+                  alt={`${tipo} ${idx}`}
+                />
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+    </div>
+  ))}
+</div>
+
+      <div className="avoid-break seccion-firmas">
+  <table className="w-full border-collapse border border-black text-[8px] text-center">
+    <tbody>
+      <tr className="h-16">
+        <td className="border border-black p-2 w-1/4 align-bottom">
+          <div className="border-t border-black pt-1">Realizó Servicio<br/>Firma Técnico</div>
+        </td>
+        <td className="border border-black p-2 w-1/4 align-bottom">
+          <div className="border-t border-black pt-1">Recibe Conforme<br/>Firma Cliente</div>
+        </td>
+        <td className="border border-black p-2 w-1/4 align-bottom">
+          <div className="font-bold">Ing. Adrián Martínez Robles</div>
+          <div className="border-t border-black pt-1">Valida Servicio</div>
+        </td>
+        <td className="border border-black p-2 w-1/4 align-top text-gray-300 italic">
+          Sello de la Unidad
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+    </div>
+    <footer className="footer-fixed"><img src="/footer.PNG" className="w-full" /></footer>
+  </div>
+</div>
     </>
   );
 }
