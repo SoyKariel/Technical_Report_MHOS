@@ -313,7 +313,7 @@ export default function ServiceReportPage() {
       {/* VISTA PDF */}
 <div className="print-only">
   <div className="print-page">
-    <header><img src="/header.PNG" className="w-full" /></header>
+    <header><img src="/Technical_Report_MHOS/header.PNG" className="w-full" /></header>
     <div className="content-padding text-black">
       
       <div className="avoid-break">
@@ -468,7 +468,7 @@ export default function ServiceReportPage() {
 </div>
 
     </div>
-    <footer className="footer-fixed"><img src="/footer.PNG" className="w-full" /></footer>
+    <footer className="footer-fixed"><img src="/Technical_Report_MHOS/footer.PNG" className="w-full" /></footer>
   </div>
 </div>
     </>
