@@ -456,8 +456,8 @@ export default function ServiceReportPage() {
           <div className="border-t border-black pt-1">Recibe Conforme<br/>Firma Cliente</div>
         </td>
         <td className="border border-black p-2 w-1/4 align-bottom">
-          <div className="font-bold">Ing. Adrián Martínez Robles</div>
-          <div className="border-t border-black pt-1">Valida Servicio</div>
+          <div className="border-t border-black pt-1 font-bold">Ing. Adrián Martínez Robles</div>
+          <div>Valida Servicio</div>
         </td>
         <td className="border border-black p-2 w-1/4 align-top text-gray-300 italic">
           Sello de la Unidad
