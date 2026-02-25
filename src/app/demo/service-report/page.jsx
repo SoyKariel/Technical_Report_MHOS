@@ -298,38 +298,30 @@ export default function ServiceReportPage() {
             </div>
           </div>
 
-          {/* Botones Finales */}
-          <div className="flex justify-center gap-6 mt-12 pb-10">
-            <button 
-              onClick={guardarReporte} 
-              disabled={loading}
-              className="bg-blue-700 text-white font-bold py-4 px-12 rounded-full shadow-xl hover:bg-blue-800 disabled:opacity-50 transition-transform hover:scale-105"
-            >
-              {loading ? "Subiendo..." : "Guardar"}
-            </button>
-            <button 
-              onClick={() => window.print()} 
-              className="bg-black text-white font-bold py-4 px-12 rounded-full shadow-xl hover:bg-gray-900 transition-transform hover:scale-105"
-            >
-              Imprimir Reporte
-            </button>
+{/* Botones Finales */}
+<div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mt-12 pb-10">
+  <button 
+    onClick={guardarReporte} 
+    disabled={loading}
+    className="w-full md:w-auto bg-blue-700 text-white font-bold py-4 px-10 rounded-full shadow-xl hover:bg-blue-800 disabled:opacity-50 transition-transform hover:scale-105"
+  >
+    {loading ? "Subiendo..." : "Guardar en Nube"}
+  </button>
 
-            <div className="flex flex-wrap justify-center gap-4 mt-12 pb-10">
-  <button onClick={guardarReporte} className="...">Guardar</button>
-  
-  <button onClick={() => window.print()} className="...">
+  <button 
+    onClick={() => window.print()} 
+    className="w-full md:w-auto bg-black text-white font-bold py-4 px-10 rounded-full shadow-xl hover:bg-gray-900 transition-transform hover:scale-105"
+  >
     Imprimir Reporte
   </button>
 
-  {/* Generar Tarjeta */}
   <button 
     onClick={imprimirTarjeta} 
-    className="bg-green-700 text-white font-bold py-4 px-12 rounded-full shadow-xl hover:bg-green-800 transition-transform hover:scale-105"
+    className="w-full md:w-auto bg-green-700 text-white font-bold py-4 px-10 rounded-full shadow-xl hover:bg-green-800 transition-transform hover:scale-105"
   >
     Generar Tarjeta
   </button>
 </div>
-          </div>
 
         </div>
       </div>
@@ -496,46 +488,62 @@ export default function ServiceReportPage() {
   </div>
 </div>
 
-{/* VISTA DE TARJETA DE IDENTIFICACIÓN */}
+{/* VISTA DE TARJETAS DE IDENTIFICACIÓN (UNA POR EQUIPO) */}
 <div className="tarjeta-identificacion text-black font-sans">
-  {/* Header de la tarjeta */}
-  <div className="border-b-2 border-blue-600 mb-1">
-    <img src="/Technical_Report_MHOS/header.PNG" className="h-8 mx-auto" alt="Logo" />
-  </div>
-
-  <div className="px-2 py-1 space-y-0.5 text-[8px]">
-    <p><strong>No. de contrato:</strong> <span className="border-b border-black inline-block w-24">{form.contrato}</span></p>
-    <p><strong>Folio de reporte:</strong> <span className="border-b border-black inline-block w-24 text-blue-700">{form.folio}</span></p>
-    
-    <div className="grid grid-cols-2 gap-1">
-      <div>
-        <p><strong>Equipo:</strong> <span className="border-b border-black block">{form.equipos[0]?.equipo}</span></p>
-        <p><strong>Marca:</strong> <span className="border-b border-black block">{form.equipos[0]?.marca}</span></p>
-        <p><strong>Modelo:</strong> <span className="border-b border-black block text-[7px]">{form.equipos[0]?.modelo}</span></p>
-        <p><strong>No. serie:</strong> <span className="border-b border-black block">{form.equipos[0]?.serie}</span></p>
+  {form.equipos.map((eq, index) => (
+    <div key={index} className="tarjeta-item relative bg-white overflow-hidden border border-gray-300 mb-8" style={{ width: '90mm', height: '55mm', pageBreakAfter: 'always' }}>
+      
+      {/* Header de la tarjeta */}
+      <div className="border-b-2 border-blue-600 mb-1">
+        <img src="/Technical_Report_MHOS/header.PNG" className="h-8 mx-auto object-contain" alt="Logo Header" />
       </div>
-      <div className="text-[7px] border-l pl-2 border-gray-300">
-        <p className="font-bold mb-1">Tipo de Mantenimiento</p>
-        <p>MP: [ {form.servicio.includes("Preventivo") ? "X" : " "} ]</p>
-        <p>MC: [ {form.servicio.includes("Correctivo") ? "X" : " "} ]</p>
-        <p>Calibración: [ ]</p>
-        <p>Otro: ___________</p>
+
+      <div className="px-3 py-1 space-y-0.5 text-[9px]">
+        <p><strong>No. de contrato:</strong> <span className="border-b border-black inline-block w-40 ml-1">{form.contrato}</span></p>
+        <p><strong>Folio de reporte:</strong> <span className="border-b border-black inline-block w-40 ml-1 text-blue-700 font-bold">{form.folio}</span></p>
+        
+        <div className="grid grid-cols-2 gap-2 mt-1">
+          <div className="space-y-0.5">
+            <p className="truncate"><strong>Equipo:</strong> <span className="border-b border-black inline-block w-full">{eq.equipo}</span></p>
+            <p className="truncate"><strong>Marca:</strong> <span className="border-b border-black inline-block w-full">{eq.marca}</span></p>
+            <p className="truncate"><strong>Modelo:</strong> <span className="border-b border-black inline-block w-full">{eq.modelo}</span></p>
+            <p className="truncate"><strong>No. serie:</strong> <span className="border-b border-black inline-block w-full">{eq.serie}</span></p>
+          </div>
+          
+          <div className="text-[8px] border-l pl-2 border-gray-400">
+            <p className="font-bold mb-1 text-blue-800">Tipo de Mantenimiento</p>
+            {/* Lógica automática de marcado basada en form.servicio */}
+            <p className="flex items-center gap-1">
+              MP: <span className="border border-black w-3 h-3 flex items-center justify-center font-bold text-[10px]">
+                {form.servicio.includes("Preventivo") ? "X" : ""}
+              </span>
+            </p>
+            <p className="flex items-center gap-1 mt-1">
+              MC: <span className="border border-black w-3 h-3 flex items-center justify-center font-bold text-[10px]">
+                {form.servicio.includes("Correctivo") ? "X" : ""}
+              </span>
+            </p>
+            <p className="flex items-center gap-1 mt-1">
+              Calib: <span className="border border-black w-3 h-3 flex items-center justify-center font-bold text-[10px]">
+                {form.servicio.includes("Diagnostico") ? "X" : ""}
+              </span>
+            </p>
+            <p className="mt-1 text-[7px]">Otro: <span className="border-b border-black inline-block w-12"></span></p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-2 mt-2">
+          <p><strong>Fecha:</strong> <span className="border-b border-black">{form.fecha}</span></p>
+          <p className="text-[7px]"><strong>Realizado por:</strong> <span className="border-b border-black block truncate">Daniel Eduardo Garcia</span></p>
+        </div>
+      </div>
+
+      {/* Footer de la tarjeta (Solo la imagen footer.PNG) */}
+      <div className="absolute bottom-0 left-0 w-full px-2 pb-1">
+        <img src="/Technical_Report_MHOS/footer.PNG" className="w-full h-auto object-contain" alt="Footer" />
       </div>
     </div>
-
-    <div className="mt-1">
-      <p><strong>Fecha:</strong> <span className="border-b border-black">{form.fecha}</span></p>
-      <p><strong>Realizado por:</strong> <span className="border-b border-black inline-block w-32">Daniel Eduardo Garcia</span></p>
-    </div>
-  </div>
-
-  {/* Footer de la tarjeta */}
-  <div className="absolute bottom-0 left-0 w-full">
-    <div className="bg-blue-600 text-white text-[6px] px-2 py-0.5 flex justify-between items-center">
-      <span>Tel. de contacto: 800-649-0822</span>
-      <img src="/Technical_Report_MHOS/footer.PNG" className="h-4 invert brightness-0" />
-    </div>
-  </div>
+  ))}
 </div>
     </>
   );
