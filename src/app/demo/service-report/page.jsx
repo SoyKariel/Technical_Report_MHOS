@@ -37,9 +37,19 @@ const emptyForm = {
 };
 
 const imprimirTarjeta = () => {
+  // 1. Aplicamos la clase
   document.body.classList.add("solo-tarjeta");
-  window.print();
-  document.body.classList.remove("solo-tarjeta");
+
+  // 2. Esperamos 300ms antes de llamar a la impresión
+  // Esto le da tiempo al navegador móvil de ocultar el reporte y mostrar la tarjeta
+  setTimeout(() => {
+    window.print();
+    
+    // 3. Quitamos la clase después de un segundo para que la pantalla vuelva a la normalidad
+    setTimeout(() => {
+      document.body.classList.remove("solo-tarjeta");
+    }, 1000);
+  }, 300); 
 };
 
 export default function ServiceReportPage() {

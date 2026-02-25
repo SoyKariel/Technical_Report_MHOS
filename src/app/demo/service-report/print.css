@@ -28,6 +28,18 @@
     display: block !important;
   }
 
+  /* Refuerzo para celulares: Ocultar reporte si estamos en modo tarjeta */
+  body.solo-tarjeta .print-only,
+  body.solo-tarjeta .print-page,
+  body.solo-tarjeta header,
+  body.solo-tarjeta footer {
+    display: none !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
   .print-page {
     width: 210mm;
     min-height: 297mm;
@@ -54,30 +66,32 @@
 }
 
 @media print {
-  /* Cuando activamos el modo tarjeta desde el botón*/
-  .solo-tarjeta .print-only {
-    display: none !important;
-  }
-
+  /* Activación del modo tarjeta */
   .solo-tarjeta .tarjeta-identificacion {
     display: block !important;
-    width: 100%;
+    width: 100% !important;
   }
 
   /* Configuración de cada tarjeta individual */
- .solo-tarjeta .tarjeta-item {
-  display: block !important;
-  width: 90mm;
-  height: 55mm;
-  border: 1px solid #ccc !important; 
-  margin: 0 auto 10mm auto; 
-  page-break-after: always !important; 
-  break-after: page;
-  position: relative;
-  background: white !important;
-  padding: 0 !important; 
-  overflow: hidden; 
-  -webkit-print-color-adjust: exact !important;
-  print-color-adjust: exact !important;
-}
+  .solo-tarjeta .tarjeta-item {
+    display: block !important;
+    width: 90mm !important;
+    height: 55mm !important;
+    border: 1px solid #ccc !important; /* Guía de corte tenue */
+    margin: 0 auto 10mm auto !important; 
+    page-break-after: always !important; 
+    break-after: page !important;
+    position: relative !important;
+    background: white !important;
+    padding: 0 !important; 
+    overflow: hidden !important; 
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
+
+  /* Ajuste para que el contenido interno de la tarjeta respete el tamaño */
+  .solo-tarjeta .tarjeta-item * {
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+  }
 }
