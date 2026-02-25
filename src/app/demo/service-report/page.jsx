@@ -488,85 +488,69 @@ export default function ServiceReportPage() {
   </div>
 </div>
 
-{/* VISTA DE TARJETAS DE IDENTIFICACIÓN (UNA POR CADA EQUIPO EN LA LISTA) */}
+{/* VISTA DE TARJETAS DE IDENTIFICACIÓN OPTIMIZADA */}
 <div className="tarjeta-identificacion text-black font-sans">
   {form.equipos && form.equipos.map((eq, index) => (
     <div 
       key={index} 
-      className="tarjeta-item bg-white border border-gray-400 mx-auto" 
+      className="tarjeta-item bg-white border border-gray-400 mx-auto overflow-hidden" 
       style={{ 
         width: '90mm', 
         height: '55mm', 
         position: 'relative',
-        marginBottom: '20px', // Espacio visual en pantalla
-        pageBreakAfter: 'always', // Fuerza una nueva hoja/espacio al imprimir
+        pageBreakAfter: 'always',
         breakAfter: 'page'
       }}
     >
-      {/* Header de la tarjeta */}
-      <div className="border-b-2 border-green-600 mb-1">
-        <img src="/Technical_Report_MHOS/header.PNG" className="h-9 mx-auto object-contain" alt="Logo Header" />
+      {/* Header Estirado (W-FULL) */}
+      <div className="w-full border-b-2 border-green-700">
+        <img src="/Technical_Report_MHOS/header.PNG" className="w-full h-10 object-fill" alt="Header" />
       </div>
 
-      <div className="px-3 py-1 space-y-1 text-[9px]">
-        <div className="flex gap-1">
-          <span className="font-bold">No. contrato:</span> 
-          <span className="border-b border-black flex-grow">{form.contrato}</span>
-        </div>
-        <div className="flex gap-1">
-          <span className="font-bold">Folio reporte:</span> 
-          <span className="border-b border-black flex-grow text-blue-700 font-bold">{form.folio}</span>
+      <div className="px-2 py-1">
+        {/* Fila Superior: Contrato y Folio */}
+        <div className="grid grid-cols-2 gap-2 text-[8px] mb-1">
+          <div className="flex gap-1"><span className="font-bold">Contrato:</span><span className="border-b border-black flex-grow truncate">{form.contrato}</span></div>
+          <div className="flex gap-1"><span className="font-bold">Folio:</span><span className="border-b border-black flex-grow text-blue-700 font-bold">{form.folio}</span></div>
         </div>
         
-        <div className="grid grid-cols-2 gap-2 mt-1">
-          {/* Columna Datos del Equipo (Limpieza de etiquetas) */}
-          <div className="space-y-1">
-            <div className="flex flex-col">
-              <span className="font-bold text-[7px] uppercase">Equipo</span>
-              <span className="border-b border-black text-[9px] h-3 truncate">{eq.equipo}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-[7px] uppercase">Marca</span>
-              <span className="border-b border-black text-[9px] h-3 truncate">{eq.marca}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-[7px] uppercase">Modelo</span>
-              <span className="border-b border-black text-[8px] h-3 truncate">{eq.modelo}</span>
-            </div>
-            <div className="flex flex-col">
-              <span className="font-bold text-[7px] uppercase">No. Serie</span>
-              <span className="border-b border-black text-[9px] h-3 truncate">{eq.serie}</span>
-            </div>
+        <div className="grid grid-cols-2 gap-3">
+          {/* LADO IZQUIERDO: Datos del Equipo */}
+          <div className="space-y-1 border-r pr-2 border-gray-300">
+            <div className="flex flex-col"><span className="text-[6px] font-bold text-gray-500 uppercase">Equipo</span><span className="text-[9px] border-b border-gray-300 h-3 truncate leading-none">{eq.equipo}</span></div>
+            <div className="flex flex-col"><span className="text-[6px] font-bold text-gray-500 uppercase">Marca</span><span className="text-[9px] border-b border-gray-300 h-3 truncate leading-none">{eq.marca}</span></div>
+            <div className="flex flex-col"><span className="text-[6px] font-bold text-gray-500 uppercase">Modelo</span><span className="text-[8px] border-b border-gray-300 h-3 truncate leading-none">{eq.modelo}</span></div>
+            <div className="flex flex-col"><span className="text-[6px] font-bold text-gray-500 uppercase">No. Serie</span><span className="text-[9px] border-b border-gray-300 h-3 truncate leading-none">{eq.serie}</span></div>
           </div>
           
-          {/* Columna Tipo de Mantenimiento */}
-          <div className="text-[8px] border-l pl-2 border-gray-400 flex flex-col justify-between">
+          {/* LADO DERECHO: Servicio, Fecha y Firma (Compacto) */}
+          <div className="flex flex-col justify-between">
             <div>
-              <p className="font-bold text-blue-800 mb-1 uppercase text-[7px]">Servicio Realizado</p>
-              <p className="text-[9px] font-bold border-b border-black leading-tight min-h-[20px]">
-                {form.servicio}
-              </p>
+              <span className="text-[6px] font-bold text-green-800 uppercase">Servicio Realizado</span>
+              <p className="text-[9px] font-bold border-b border-black leading-tight mb-2 min-h-[12px]">{form.servicio}</p>
+              
+              {/* Fecha y Firma acomodados aquí debajo */}
+              <div className="space-y-2">
+                <div className="flex flex-col">
+                  <span className="text-[6px] font-bold uppercase">Fecha</span>
+                  <span className="border-b border-black text-[9px] h-3 leading-none">{form.fecha}</span>
+                </div>
+                <div className="flex flex-col pt-1">
+                  <div className="border-b border-black w-full h-3"></div>
+                  <span className="text-[5px] text-center uppercase font-bold mt-0.5">Firma Realizó</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-[6px] italic text-gray-400 mt-1">
+              MP [ ] MC [ ] Calib [ ]
             </div>
           </div>
         </div>
-
-        {/* Sección de Firma y Fecha */}
-        <div className="grid grid-cols-2 gap-2 mt-2 items-end">
-          <div className="flex gap-1">
-            <span className="font-bold">Fecha:</span>
-            <span className="border-b border-black flex-grow">{form.fecha}</span>
-          </div>
-          <div className="text-center">
-            <div className="border-b border-black w-full h-3"></div>
-            <p className="text-[5px] uppercase mt-0.5">Realizado por (Firma)</p>
-          </div>
-        </div>
       </div>
 
-      {/* Footer solo imagen */}
-      <div className="absolute bottom-0 left-0 w-full px-1 pb-1">
-        <img src="/Technical_Report_MHOS/footer.PNG" className="w-full h-auto object-contain" alt="Footer" />
-      </div>
+      {/* Footer: Línea Verde Sencilla */}
+      <div className="absolute bottom-0 left-0 w-full h-1 bg-green-700"></div>
     </div>
   ))}
 </div>

@@ -54,7 +54,7 @@
 }
 
 @media print {
-  /* Cuando activamos el modo tarjeta desde el botón verde */
+  /* Cuando activamos el modo tarjeta desde el botón*/
   .solo-tarjeta .print-only {
     display: none !important;
   }
@@ -65,15 +65,19 @@
   }
 
   /* Configuración de cada tarjeta individual */
-  .solo-tarjeta .tarjeta-item {
-    display: block !important;
-    width: 90mm;
-    height: 55mm;
-    border: 1px solid #ccc !important; /* Guía de corte tenue */
-    margin: 0 auto 10mm auto; /* Espacio entre tarjetas en la impresión */
-    page-break-after: always !important; /* Fuerza una tarjeta por sección/hoja */
-    break-after: page;
-    position: relative;
-    background: white !important;
-  }
+ .solo-tarjeta .tarjeta-item {
+  display: block !important;
+  width: 90mm;
+  height: 55mm;
+  border: 1px solid #ccc !important; 
+  margin: 0 auto 10mm auto; 
+  page-break-after: always !important; 
+  break-after: page;
+  position: relative;
+  background: white !important;
+  padding: 0 !important; 
+  overflow: hidden; 
+  -webkit-print-color-adjust: exact !important;
+  print-color-adjust: exact !important;
+}
 }
