@@ -491,55 +491,54 @@ export default function ServiceReportPage() {
 {/* VISTA DE TARJETAS DE IDENTIFICACIÓN (UNA POR EQUIPO) */}
 <div className="tarjeta-identificacion text-black font-sans">
   {form.equipos.map((eq, index) => (
-    <div key={index} className="tarjeta-item relative bg-white overflow-hidden border border-gray-300 mb-8" style={{ width: '90mm', height: '55mm', pageBreakAfter: 'always' }}>
+    <div 
+      key={index} 
+      className="tarjeta-item relative bg-white overflow-hidden border border-gray-400 mb-10 mx-auto" 
+      style={{ width: '90mm', height: '55mm', pageBreakAfter: 'always', position: 'relative' }}
+    >
       
       {/* Header de la tarjeta */}
       <div className="border-b-2 border-blue-600 mb-1">
-        <img src="/Technical_Report_MHOS/header.PNG" className="h-8 mx-auto object-contain" alt="Logo Header" />
+        <img src="/Technical_Report_MHOS/header.PNG" className="h-9 mx-auto object-contain" alt="Logo Header" />
       </div>
 
-      <div className="px-3 py-1 space-y-0.5 text-[9px]">
+      <div className="px-3 py-1 space-y-1 text-[9px]">
         <p><strong>No. de contrato:</strong> <span className="border-b border-black inline-block w-40 ml-1">{form.contrato}</span></p>
         <p><strong>Folio de reporte:</strong> <span className="border-b border-black inline-block w-40 ml-1 text-blue-700 font-bold">{form.folio}</span></p>
         
         <div className="grid grid-cols-2 gap-2 mt-1">
+          {/* Columna Datos del Equipo */}
           <div className="space-y-0.5">
             <p className="truncate"><strong>Equipo:</strong> <span className="border-b border-black inline-block w-full">{eq.equipo}</span></p>
             <p className="truncate"><strong>Marca:</strong> <span className="border-b border-black inline-block w-full">{eq.marca}</span></p>
-            <p className="truncate"><strong>Modelo:</strong> <span className="border-b border-black inline-block w-full">{eq.modelo}</span></p>
+            <p className="truncate"><strong>Modelo:</strong> <span className="border-b border-black inline-block w-full text-[7px]">{eq.modelo}</span></p>
             <p className="truncate"><strong>No. serie:</strong> <span className="border-b border-black inline-block w-full">{eq.serie}</span></p>
           </div>
           
+          {/* Columna Tipo de Mantenimiento */}
           <div className="text-[8px] border-l pl-2 border-gray-400">
             <p className="font-bold mb-1 text-blue-800">Tipo de Mantenimiento</p>
-            {/* Lógica automática de marcado basada en form.servicio */}
-            <p className="flex items-center gap-1">
-              MP: <span className="border border-black w-3 h-3 flex items-center justify-center font-bold text-[10px]">
-                {form.servicio.includes("Preventivo") ? "X" : ""}
-              </span>
+            <p className="text-[9px] font-bold border-b border-black pb-0.5 min-h-[15px]">
+              {form.servicio}
             </p>
-            <p className="flex items-center gap-1 mt-1">
-              MC: <span className="border border-black w-3 h-3 flex items-center justify-center font-bold text-[10px]">
-                {form.servicio.includes("Correctivo") ? "X" : ""}
-              </span>
-            </p>
-            <p className="flex items-center gap-1 mt-1">
-              Calib: <span className="border border-black w-3 h-3 flex items-center justify-center font-bold text-[10px]">
-                {form.servicio.includes("Diagnostico") ? "X" : ""}
-              </span>
-            </p>
-            <p className="mt-1 text-[7px]">Otro: <span className="border-b border-black inline-block w-12"></span></p>
+            <div className="mt-2 space-y-1 text-[7px] italic text-gray-500">
+              <p>MP: [  ] MC: [  ]</p>
+              <p>Calib: [  ] Otro: ____</p>
+            </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 mt-2">
+        <div className="grid grid-cols-2 gap-2 mt-3 items-end">
           <p><strong>Fecha:</strong> <span className="border-b border-black">{form.fecha}</span></p>
-          <p className="text-[7px]"><strong>Realizado por:</strong> <span className="border-b border-black block truncate">Daniel Eduardo Garcia</span></p>
+          <div className="text-center">
+            <div className="border-b border-black w-full h-4"></div>
+            <p className="text-[6px] uppercase mt-0.5">Realizado por (Firma)</p>
+          </div>
         </div>
       </div>
 
-      {/* Footer de la tarjeta (Solo la imagen footer.PNG) */}
-      <div className="absolute bottom-0 left-0 w-full px-2 pb-1">
+      {/* Footer de la tarjeta (Solo imagen) */}
+      <div className="absolute bottom-0 left-0 w-full px-1 pb-1">
         <img src="/Technical_Report_MHOS/footer.PNG" className="w-full h-auto object-contain" alt="Footer" />
       </div>
     </div>

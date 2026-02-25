@@ -9,6 +9,14 @@
 }
 
 @media print {
+  .solo-tarjeta .tarjeta-item {
+    display: block !important;
+    page-break-after: always !important; /* Fuerza una tarjeta por hoja o espacio */
+    break-inside: avoid;
+  }
+}
+
+@media print {
   .solo-tarjeta .print-only {
     display: none !important;
   }
