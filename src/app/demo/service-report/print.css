@@ -4,6 +4,31 @@
   display: none;
 }
 
+.tarjeta-identificacion {
+  display: none;
+}
+
+@media print {
+  .solo-tarjeta .print-only {
+    display: none !important;
+  }
+
+  .solo-tarjeta .tarjeta-identificacion {
+    display: block !important;
+    width: 90mm;
+    height: 55mm;
+    border: 1px solid #ccc;
+    padding: 2mm;
+    margin: 0 auto;
+    position: relative;
+    overflow: hidden;
+    background-color: white;
+  }
+
+  @page {
+  }
+}
+
 @media print {
   @page {
     size: letter;

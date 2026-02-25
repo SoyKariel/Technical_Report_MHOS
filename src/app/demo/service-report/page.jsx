@@ -36,6 +36,12 @@ const emptyForm = {
   refacciones: [{ descripcion: "", cantidad: "" }]
 };
 
+const imprimirTarjeta = () => {
+  document.body.classList.add("solo-tarjeta");
+  window.print();
+  document.body.classList.remove("solo-tarjeta");
+};
+
 export default function ServiceReportPage() {
   const [form, setForm] = useState(emptyForm);
   const [loading, setLoading] = useState(false);
@@ -307,6 +313,22 @@ export default function ServiceReportPage() {
             >
               Imprimir Reporte
             </button>
+
+            <div className="flex flex-wrap justify-center gap-4 mt-12 pb-10">
+  <button onClick={guardarReporte} className="...">Guardar</button>
+  
+  <button onClick={() => window.print()} className="...">
+    Imprimir Reporte
+  </button>
+
+  {/* Generar Tarjeta */}
+  <button 
+    onClick={imprimirTarjeta} 
+    className="bg-green-700 text-white font-bold py-4 px-12 rounded-full shadow-xl hover:bg-green-800 transition-transform hover:scale-105"
+  >
+    Generar Tarjeta
+  </button>
+</div>
           </div>
 
         </div>
@@ -471,6 +493,48 @@ export default function ServiceReportPage() {
 
     </div>
     <footer className="footer-fixed"><img src="/Technical_Report_MHOS/footer.PNG" className="w-full" /></footer>
+  </div>
+</div>
+
+{/* VISTA DE TARJETA DE IDENTIFICACIÓN */}
+<div className="tarjeta-identificacion text-black font-sans">
+  {/* Header de la tarjeta */}
+  <div className="border-b-2 border-blue-600 mb-1">
+    <img src="/Technical_Report_MHOS/header.PNG" className="h-8 mx-auto" alt="Logo" />
+  </div>
+
+  <div className="px-2 py-1 space-y-0.5 text-[8px]">
+    <p><strong>No. de contrato:</strong> <span className="border-b border-black inline-block w-24">{form.contrato}</span></p>
+    <p><strong>Folio de reporte:</strong> <span className="border-b border-black inline-block w-24 text-blue-700">{form.folio}</span></p>
+    
+    <div className="grid grid-cols-2 gap-1">
+      <div>
+        <p><strong>Equipo:</strong> <span className="border-b border-black block">{form.equipos[0]?.equipo}</span></p>
+        <p><strong>Marca:</strong> <span className="border-b border-black block">{form.equipos[0]?.marca}</span></p>
+        <p><strong>Modelo:</strong> <span className="border-b border-black block text-[7px]">{form.equipos[0]?.modelo}</span></p>
+        <p><strong>No. serie:</strong> <span className="border-b border-black block">{form.equipos[0]?.serie}</span></p>
+      </div>
+      <div className="text-[7px] border-l pl-2 border-gray-300">
+        <p className="font-bold mb-1">Tipo de Mantenimiento</p>
+        <p>MP: [ {form.servicio.includes("Preventivo") ? "X" : " "} ]</p>
+        <p>MC: [ {form.servicio.includes("Correctivo") ? "X" : " "} ]</p>
+        <p>Calibración: [ ]</p>
+        <p>Otro: ___________</p>
+      </div>
+    </div>
+
+    <div className="mt-1">
+      <p><strong>Fecha:</strong> <span className="border-b border-black">{form.fecha}</span></p>
+      <p><strong>Realizado por:</strong> <span className="border-b border-black inline-block w-32">Daniel Eduardo Garcia</span></p>
+    </div>
+  </div>
+
+  {/* Footer de la tarjeta */}
+  <div className="absolute bottom-0 left-0 w-full">
+    <div className="bg-blue-600 text-white text-[6px] px-2 py-0.5 flex justify-between items-center">
+      <span>Tel. de contacto: 800-649-0822</span>
+      <img src="/Technical_Report_MHOS/footer.PNG" className="h-4 invert brightness-0" />
+    </div>
   </div>
 </div>
     </>
