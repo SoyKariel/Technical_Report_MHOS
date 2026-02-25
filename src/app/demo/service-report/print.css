@@ -33,7 +33,7 @@
   }
 
   .content-padding {
-    padding: 5mm 15mm 25mm 15mm;
+    padding: 10mm 15mm !important;
   }
 
   .footer-fixed {

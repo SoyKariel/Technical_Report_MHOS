@@ -130,8 +130,8 @@ export default function ServiceReportPage() {
 
   return (
     <>
-      <div className="no-print min-h-screen p-8 text-black" style={{ background: "#2F7A4A" }}>
-        <div className="max-w-6xl mx-auto">
+      <div className="no-print min-h-screen p-2 md:p-8 text-black" style={{ background: "#2F7A4A" }}>
+        <div className="w-full max-w-6xl mx-auto">
 
           {/* Formulario de Entrada */}
           <div className="bg-white rounded-xl p-6 mb-6 shadow-md text-black">
@@ -171,6 +171,7 @@ export default function ServiceReportPage() {
 
               {/* Datos del Equipo */}
               <div className="bg-white p-6 rounded-xl shadow-md text-black">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                 <h3 className="font-bold mb-3 text-green-800 uppercase">Datos del Equipo Atendido</h3>
                 {form.equipos.map((eq, i) => (
                   <div key={i} className="border p-4 rounded mb-4 bg-gray-50 relative border-gray-200">
@@ -186,6 +187,7 @@ export default function ServiceReportPage() {
                   </div>
                 ))}
                 <button onClick={()=>addItem("equipos", { equipo: "", marca: "", modelo: "", serie: "", ssm: "", location: "" })} className="text-blue-700 font-bold text-sm hover:underline">+ AGREGAR OTRO EQUIPO</button>
+                </div>
               </div>
 
               {/* Equipo de Medición */}
@@ -272,7 +274,7 @@ export default function ServiceReportPage() {
           {/* Fotos */}
           <div className="bg-white p-6 rounded-xl shadow-md mt-6 text-black">
             <h3 className="font-bold mb-4 text-center border-b pb-2 text-green-800 uppercase">Evidencia Fotográfica</h3>
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {['Antes', 'Durante', 'Despues', 'Etiqueta'].map(tipo => (
                 <div key={tipo} className="border p-3 rounded-lg bg-gray-50 border-gray-200">
                   <p className="font-bold mb-2 text-[10px] uppercase text-center text-gray-700">{tipo}</p>
@@ -370,7 +372,7 @@ export default function ServiceReportPage() {
         </table>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-4">
+      <div className="flex flex-col md:grid md:grid-cols-2 gap-4 mb-4">
         <div className="avoid-break">
           <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Anexo Técnico (Checklist)</h3>
           <div className="border border-black p-2 min-h-[180px]">
