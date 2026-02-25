@@ -529,7 +529,7 @@ export default function ServiceReportPage() {
               <span className="text-[6px] font-bold text-green-800 uppercase">Servicio Realizado</span>
               <p className="text-[9px] font-bold border-b border-black leading-tight mb-2 min-h-[12px]">{form.servicio}</p>
               
-              {/* Fecha y Firma acomodados aquí debajo */}
+              {/* Fecha y Firma*/}
               <div className="space-y-2">
                 <div className="flex flex-col">
                   <span className="text-[6px] font-bold uppercase">Fecha</span>
@@ -537,13 +537,9 @@ export default function ServiceReportPage() {
                 </div>
                 <div className="flex flex-col pt-1">
                   <div className="border-b border-black w-full h-3"></div>
-                  <span className="text-[5px] text-center uppercase font-bold mt-0.5">Firma Realizó</span>
+                  <span className="text-[5px] text-center uppercase font-bold mt-0.5">Nombre y firma de quien realizó</span>
                 </div>
               </div>
-            </div>
-
-            <div className="text-[6px] italic text-gray-400 mt-1">
-              MP [ ] MC [ ] Calib [ ]
             </div>
           </div>
         </div>
