@@ -488,56 +488,82 @@ export default function ServiceReportPage() {
   </div>
 </div>
 
-{/* VISTA DE TARJETAS DE IDENTIFICACIÓN (UNA POR EQUIPO) */}
+{/* VISTA DE TARJETAS DE IDENTIFICACIÓN (UNA POR CADA EQUIPO EN LA LISTA) */}
 <div className="tarjeta-identificacion text-black font-sans">
-  {form.equipos.map((eq, index) => (
+  {form.equipos && form.equipos.map((eq, index) => (
     <div 
       key={index} 
-      className="tarjeta-item relative bg-white overflow-hidden border border-gray-400 mb-10 mx-auto" 
-      style={{ width: '90mm', height: '55mm', pageBreakAfter: 'always', position: 'relative' }}
+      className="tarjeta-item bg-white border border-gray-400 mx-auto" 
+      style={{ 
+        width: '90mm', 
+        height: '55mm', 
+        position: 'relative',
+        marginBottom: '20px', // Espacio visual en pantalla
+        pageBreakAfter: 'always', // Fuerza una nueva hoja/espacio al imprimir
+        breakAfter: 'page'
+      }}
     >
-      
       {/* Header de la tarjeta */}
-      <div className="border-b-2 border-blue-600 mb-1">
+      <div className="border-b-2 border-green-600 mb-1">
         <img src="/Technical_Report_MHOS/header.PNG" className="h-9 mx-auto object-contain" alt="Logo Header" />
       </div>
 
       <div className="px-3 py-1 space-y-1 text-[9px]">
-        <p><strong>No. de contrato:</strong> <span className="border-b border-black inline-block w-40 ml-1">{form.contrato}</span></p>
-        <p><strong>Folio de reporte:</strong> <span className="border-b border-black inline-block w-40 ml-1 text-blue-700 font-bold">{form.folio}</span></p>
+        <div className="flex gap-1">
+          <span className="font-bold">No. contrato:</span> 
+          <span className="border-b border-black flex-grow">{form.contrato}</span>
+        </div>
+        <div className="flex gap-1">
+          <span className="font-bold">Folio reporte:</span> 
+          <span className="border-b border-black flex-grow text-blue-700 font-bold">{form.folio}</span>
+        </div>
         
         <div className="grid grid-cols-2 gap-2 mt-1">
-          {/* Columna Datos del Equipo */}
-          <div className="space-y-0.5">
-            <p className="truncate"><strong>Equipo:</strong> <span className="border-b border-black inline-block w-full">{eq.equipo}</span></p>
-            <p className="truncate"><strong>Marca:</strong> <span className="border-b border-black inline-block w-full">{eq.marca}</span></p>
-            <p className="truncate"><strong>Modelo:</strong> <span className="border-b border-black inline-block w-full text-[7px]">{eq.modelo}</span></p>
-            <p className="truncate"><strong>No. serie:</strong> <span className="border-b border-black inline-block w-full">{eq.serie}</span></p>
+          {/* Columna Datos del Equipo (Limpieza de etiquetas) */}
+          <div className="space-y-1">
+            <div className="flex flex-col">
+              <span className="font-bold text-[7px] uppercase">Equipo</span>
+              <span className="border-b border-black text-[9px] h-3 truncate">{eq.equipo}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-[7px] uppercase">Marca</span>
+              <span className="border-b border-black text-[9px] h-3 truncate">{eq.marca}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-[7px] uppercase">Modelo</span>
+              <span className="border-b border-black text-[8px] h-3 truncate">{eq.modelo}</span>
+            </div>
+            <div className="flex flex-col">
+              <span className="font-bold text-[7px] uppercase">No. Serie</span>
+              <span className="border-b border-black text-[9px] h-3 truncate">{eq.serie}</span>
+            </div>
           </div>
           
           {/* Columna Tipo de Mantenimiento */}
-          <div className="text-[8px] border-l pl-2 border-gray-400">
-            <p className="font-bold mb-1 text-blue-800">Tipo de Mantenimiento</p>
-            <p className="text-[9px] font-bold border-b border-black pb-0.5 min-h-[15px]">
-              {form.servicio}
-            </p>
-            <div className="mt-2 space-y-1 text-[7px] italic text-gray-500">
-              <p>MP: [  ] MC: [  ]</p>
-              <p>Calib: [  ] Otro: ____</p>
+          <div className="text-[8px] border-l pl-2 border-gray-400 flex flex-col justify-between">
+            <div>
+              <p className="font-bold text-blue-800 mb-1 uppercase text-[7px]">Servicio Realizado</p>
+              <p className="text-[9px] font-bold border-b border-black leading-tight min-h-[20px]">
+                {form.servicio}
+              </p>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-2 mt-3 items-end">
-          <p><strong>Fecha:</strong> <span className="border-b border-black">{form.fecha}</span></p>
+        {/* Sección de Firma y Fecha */}
+        <div className="grid grid-cols-2 gap-2 mt-2 items-end">
+          <div className="flex gap-1">
+            <span className="font-bold">Fecha:</span>
+            <span className="border-b border-black flex-grow">{form.fecha}</span>
+          </div>
           <div className="text-center">
-            <div className="border-b border-black w-full h-4"></div>
-            <p className="text-[6px] uppercase mt-0.5">Realizado por (Firma)</p>
+            <div className="border-b border-black w-full h-3"></div>
+            <p className="text-[5px] uppercase mt-0.5">Realizado por (Firma)</p>
           </div>
         </div>
       </div>
 
-      {/* Footer de la tarjeta (Solo imagen) */}
+      {/* Footer solo imagen */}
       <div className="absolute bottom-0 left-0 w-full px-1 pb-1">
         <img src="/Technical_Report_MHOS/footer.PNG" className="w-full h-auto object-contain" alt="Footer" />
       </div>

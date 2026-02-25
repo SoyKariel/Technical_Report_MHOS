@@ -1,67 +1,38 @@
-/* print.css */
-
-.print-only {
-  display: none;
-}
-
-.tarjeta-identificacion {
-  display: none;
-}
-
+/* --- REGLAS GENERALES DE IMPRESIÓN --- */
 @media print {
-  .solo-tarjeta .tarjeta-item {
-    display: block !important;
-    page-break-after: always !important; /* Fuerza una tarjeta por hoja o espacio */
-    break-inside: avoid;
-  }
-}
-
-@media print {
-  .solo-tarjeta .print-only {
-    display: none !important;
-  }
-
-  .solo-tarjeta .tarjeta-identificacion {
-    display: block !important;
-    width: 90mm;
-    height: 55mm;
-    border: 1px solid #ccc;
-    padding: 2mm;
-    margin: 0 auto;
-    position: relative;
-    overflow: hidden;
-    background-color: white;
-  }
-
-  @page {
-  }
-}
-
-@media print {
-  @page {
-    size: letter;
-    margin: 0mm;
-  }
-
-  * {
+  body {
+    background: white !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
-    box-sizing: border-box !important;
   }
 
   .no-print {
     display: none !important;
   }
 
-  .print-only {
+  /* Evita que los bloques se corten a la mitad entre páginas */
+  .avoid-break {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+
+/* --- REGLAS ESPECÍFICAS DEL REPORTE TÉCNICO --- */
+.print-only {
+  display: none;
+}
+
+@media print {
+  /* Si NO estamos en modo "solo-tarjeta", mostramos el reporte normal */
+  body:not(.solo-tarjeta) .print-only {
     display: block !important;
-    width: 100%;
-    background-color: white !important;
   }
 
   .print-page {
-    width: 216mm;
-    min-height: 279mm;
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    background: white;
     position: relative;
   }
 
@@ -70,41 +41,39 @@
   }
 
   .footer-fixed {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+  }
+}
+
+/* --- REGLAS ESPECÍFICAS DE LAS TARJETAS --- */
+.tarjeta-identificacion {
+  display: none; /* Oculto en la web siempre */
+}
+
+@media print {
+  /* Cuando activamos el modo tarjeta desde el botón verde */
+  .solo-tarjeta .print-only {
+    display: none !important;
+  }
+
+  .solo-tarjeta .tarjeta-identificacion {
+    display: block !important;
+    width: 100%;
+  }
+
+  /* Configuración de cada tarjeta individual */
+  .solo-tarjeta .tarjeta-item {
+    display: block !important;
+    width: 90mm;
+    height: 55mm;
+    border: 1px solid #ccc !important; /* Guía de corte tenue */
+    margin: 0 auto 10mm auto; /* Espacio entre tarjetas en la impresión */
+    page-break-after: always !important; /* Fuerza una tarjeta por sección/hoja */
+    break-after: page;
     position: relative;
-    width: 100%;
-    margin-top: 20px;
+    background: white !important;
   }
-
-  /* Control de saltos de página */
-  .avoid-break {
-    break-inside: avoid;
-    page-break-inside: avoid;
-    display: block;
-    margin-bottom: 10px;
-  }
-
-  header img, footer img {
-    width: 100%;
-    display: block;
-  }
-
-  .avoid-break {
-  break-inside: avoid !important;
-  page-break-inside: avoid !important;
-  display: block;
-  position: relative;
-}
-
-.seccion-firmas {
-  break-inside: avoid !important;
-  page-break-inside: avoid !important;
-  page-break-after: auto;
-  margin-top: 30px;
-}
-
-.print-page {
-  width: 216mm;
-  height: auto !important; 
-  min-height: 279mm;
-}
 }
