@@ -387,13 +387,18 @@ export default function ServiceReportPage() {
       </div>
 
 {/* VISTA PDF REPORTE */}
+{/* VISTA PDF REPORTE */}
 <div className="print-only">
   {/* Header fijo: Se repetirá en cada hoja automáticamente por CSS */}
   <div className="header-print">
-    <img src="/Technical_Report_MHOS/header.PNG" className="w-full" alt="Header" />
+    <img 
+      src={`${prefix}/Technical_Report_MHOS/header.PNG`} 
+      className="w-full" 
+      alt="Header" 
+    />
   </div>
 
-  {/* Contenedor principal con los márgenes definidos en el CSS */}
+  {/* Contenedor principal con los márgenes definidos en el CSS para evitar encimarse */}
   <div className="report-content text-black">
     
     {/* 1. ENCABEZADO Y DATOS DE CLIENTE */}
@@ -493,7 +498,7 @@ export default function ServiceReportPage() {
                   <td className="border border-black p-1 font-bold">{ref.cantidad}</td>
                 </tr>
               )) : (
-                <tr><td colSpan="2" className="border border-black p-1 text-center italic">N/A</td></tr>
+                <tr><td colSpan="2" className="border border-black p-1 text-center italic uppercase text-gray-400">No aplica</td></tr>
               )}
             </tbody>
           </table>
@@ -516,7 +521,7 @@ export default function ServiceReportPage() {
                   <td className="border border-black p-1">{med.serie}</td>
                 </tr>
               )) : (
-                <tr><td colSpan="2" className="border border-black p-1 text-center italic">N/A</td></tr>
+                <tr><td colSpan="2" className="border border-black p-1 text-center italic uppercase text-gray-400">No aplica</td></tr>
               )}
             </tbody>
           </table>
@@ -534,7 +539,7 @@ export default function ServiceReportPage() {
               <p className="text-[7px] font-bold uppercase mb-1 bg-gray-50 px-1 border-b border-gray-300">{tipo}</p>
               <div className="grid grid-cols-2 gap-1">
                 {form[`fotos${tipo}`].map((foto, idx) => (
-                  <div key={idx} className="border border-black aspect-video overflow-hidden bg-gray-100 flex items-center justify-center">
+                  <div key={idx} className="border border-black aspect-video overflow-hidden bg-white flex items-center justify-center">
                     <img 
                       src={URL.createObjectURL(foto)} 
                       className="object-contain max-h-full max-w-full" 
@@ -576,7 +581,11 @@ export default function ServiceReportPage() {
 
   {/* Footer fijo: Se repetirá en cada hoja automáticamente por CSS */}
   <div className="footer-print">
-    <img src="/Technical_Report_MHOS/footer.PNG" className="w-full" alt="Footer" />
+    <img 
+      src={`${prefix}/Technical_Report_MHOS/footer.PNG`} 
+      className="w-full" 
+      alt="Footer" 
+    />
   </div>
 </div>
 
