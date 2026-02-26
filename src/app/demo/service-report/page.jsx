@@ -386,8 +386,6 @@ export default function ServiceReportPage() {
         </div>
       </div>
 
-
-{/* VISTA PDF REPORTE */}
 {/* VISTA PDF REPORTE */}
 <div className="print-only">
   {/* Header fijo: Sin prefix, ruta directa */}

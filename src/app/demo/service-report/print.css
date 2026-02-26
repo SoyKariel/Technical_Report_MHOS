@@ -1,19 +1,44 @@
-/* --- CONFIGURACIÓN GLOBAL DE IMPRESIÓN --- */
+/* --- 1. BLOQUEO EN PANTALLA (WEB) --- */
+/* Esto garantiza que NADA del reporte se vea mientras usas localhost */
+.print-only, 
+.header-print, 
+.footer-print, 
+.report-content,
+.tarjeta-identificacion {
+  display: none !important;
+}
+
+/* --- 2. REGLAS EXCLUSIVAS PARA IMPRESIÓN --- */
 @media print {
-  @page { margin: 0 !important; }
-  
+  @page { 
+    margin: 0 !important; 
+  }
+
   body {
+    background: white !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     margin: 0 !important;
   }
 
-  /* --- REPORTE (TAMAÑO CARTA) --- */
+  /* Ocultar el formulario y botones */
+  .no-print { 
+    display: none !important; 
+  }
+
+  /* --- CONFIGURACIÓN DEL REPORTE (CARTA) --- */
   body:not(.solo-tarjeta) {
     @page { size: letter; }
   }
 
-  /* Header Fijo: le damos 35mm de altura */
+  /* Activamos los elementos solo aquí */
+  body:not(.solo-tarjeta) .print-only,
+  body:not(.solo-tarjeta) .header-print,
+  body:not(.solo-tarjeta) .footer-print,
+  body:not(.solo-tarjeta) .report-content {
+    display: block !important;
+  }
+
   body:not(.solo-tarjeta) .header-print {
     position: fixed;
     top: 0;
@@ -21,10 +46,8 @@
     width: 100%;
     height: 35mm;
     z-index: 100;
-    background: white;
   }
 
-  /* Footer Fijo: le damos 25mm de altura */
   body:not(.solo-tarjeta) .footer-print {
     position: fixed;
     bottom: 0;
@@ -32,22 +55,18 @@
     width: 100%;
     height: 25mm;
     z-index: 100;
-    background: white;
   }
 
-  /* EL CONTENIDO: El margen superior DEBE ser mayor a 35mm para que no se encime */
   body:not(.solo-tarjeta) .report-content {
-    display: block !important;
-    margin-top: 40mm !important;    /* Espacio reservado para el header */
-    margin-bottom: 30mm !important; /* Espacio reservado para el footer */
+    margin-top: 40mm !important; /* Espacio para que el header no encime */
+    margin-bottom: 30mm !important; /* Espacio para el footer */
     padding: 0 15mm !important;
   }
 
-  /* --- TARJETA DE PRESENTACIÓN (TAMAÑO EXACTO) --- */
-  /* Esto responde a tu pregunta: Sí, se puede definiendo el size exacto */
+  /* --- CONFIGURACIÓN DE TARJETA (90x55mm) --- */
   body.solo-tarjeta {
     @page { 
-      size: 90mm 55mm; /* Aquí definimos el tamaño físico del PDF */
+      size: 90mm 55mm !important; 
       margin: 0 !important;
     }
   }
@@ -60,9 +79,8 @@
     width: 90mm !important;
     height: 55mm !important;
     page-break-after: always !important;
-    overflow: hidden;
     position: relative;
-    border: none !important;
+    overflow: hidden;
     background: white !important;
   }
 }
