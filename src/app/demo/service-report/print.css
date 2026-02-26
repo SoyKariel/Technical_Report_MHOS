@@ -10,10 +10,9 @@
     display: none !important;
   }
 
-  /* Evita que los bloques se corten a la mitad entre páginas */
-  .avoid-break {
-    page-break-inside: avoid !important;
-    break-inside: avoid !important;
+  /* ELIMINAR URL, FECHA Y TÍTULO DE LAS ESQUINAS */
+  @page {
+    margin: 0 !important; /* Elimina el espacio donde el navegador pone la URL y fecha */
   }
 }
 
@@ -23,75 +22,63 @@
 }
 
 @media print {
-  /* Si NO estamos en modo "solo-tarjeta", mostramos el reporte normal */
+  /* Si NO estamos en modo "solo-tarjeta", reporte normal tamaño Carta */
   body:not(.solo-tarjeta) .print-only {
     display: block !important;
   }
 
-  /* Refuerzo para celulares: Ocultar reporte si estamos en modo tarjeta */
+  @page {
+    size: letter; /* Hoja carta para el reporte */
+    margin: 10mm !important;
+  }
+
+  /* Ocultar reporte si estamos en modo tarjeta */
   body.solo-tarjeta .print-only,
   body.solo-tarjeta .print-page,
   body.solo-tarjeta header,
   body.solo-tarjeta footer {
     display: none !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: hidden !important;
   }
 
   .print-page {
     width: 210mm;
     min-height: 297mm;
     margin: 0 auto;
-    background: white;
-    position: relative;
-  }
-
-  .content-padding {
-    padding: 10mm 15mm !important;
-  }
-
-  .footer-fixed {
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    width: 100%;
   }
 }
 
-/* --- REGLAS ESPECÍFICAS DE LAS TARJETAS --- */
+/* --- REGLAS ESPECÍFICAS DE LAS TARJETAS (IMPRESORA ESPECIAL) --- */
 .tarjeta-identificacion {
-  display: none; /* Oculto en la web siempre */
+  display: none;
 }
 
 @media print {
-  /* Activación del modo tarjeta */
-  .solo-tarjeta .tarjeta-identificacion {
-    display: block !important;
-    width: 100% !important;
+  /* Forzamos el tamaño exacto de la tarjeta de presentación */
+  @page {
+    size: 90mm 55mm; /* Tamaño físico de la tarjeta */
+    margin: 0 !important;   /* Elimina encabezados y pies de página del navegador */
   }
 
-  /* Configuración de cada tarjeta individual */
+  body.solo-tarjeta {
+    width: 90mm !important;
+    height: 55mm !important;
+  }
+
+  .solo-tarjeta .tarjeta-identificacion {
+    display: block !important;
+    width: 90mm !important;
+  }
+
   .solo-tarjeta .tarjeta-item {
     display: block !important;
     width: 90mm !important;
     height: 55mm !important;
-    border: 1px solid #ccc !important; /* Guía de corte tenue */
-    margin: 0 auto 10mm auto !important; 
-    page-break-after: always !important; 
-    break-after: page !important;
+    page-break-after: always !important; /* Cada equipo es una tarjeta nueva en la impresora */
     position: relative !important;
-    background: white !important;
     padding: 0 !important; 
-    overflow: hidden !important; 
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-
-  /* Ajuste para que el contenido interno de la tarjeta respete el tamaño */
-  .solo-tarjeta .tarjeta-item * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
+    margin: 0 !important;
+    overflow: hidden !important;
+    background: white !important;
+    border: none !important; /* Sin bordes para que no salgan rayas en la tarjeta */
   }
 }

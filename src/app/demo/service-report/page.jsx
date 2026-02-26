@@ -93,12 +93,32 @@ export default function ServiceReportPage() {
   const removeItem = (i, tipo) => setForm(prev => ({ ...prev, [tipo]: prev[tipo].filter((_, idx) => idx !== i) }));
 
   const handleFotos = (files, tipo) => {
-    const nuevas = Array.from(files);
-    setForm(prev => ({ 
+  const nuevas = Array.from(files);
+  
+  setForm(prev => {
+    // Obtenemos las fotos que ya existen en esa categoría
+    const fotosActuales = prev[tipo] || [];
+    
+    // Si es la Etiqueta, solo permitimos 1
+    if (tipo === "fotosEtiqueta") {
+      return { ...prev, [tipo]: [nuevas[0]] };
+    }
+
+    const espacioDisponible = 2 - fotosActuales.length;
+
+    if (espacioDisponible <= 0) {
+      alert("Ya has alcanzado el límite de 2 fotografías para esta etapa.");
+      return prev;
+    }
+
+    const fotosAAgregar = nuevas.slice(0, espacioDisponible);
+
+    return { 
       ...prev, 
-      [tipo]: tipo === "fotosEtiqueta" ? [nuevas[0]] : [...(prev[tipo] || []), ...nuevas] 
-    }));
-  };
+      [tipo]: [...fotosActuales, ...fotosAAgregar] 
+    };
+  });
+};
   
   const removeFoto = (tipo, index) => setForm(prev => ({ ...prev, [tipo]: prev[tipo].filter((_, i) => i !== index) }));
 
@@ -287,26 +307,51 @@ export default function ServiceReportPage() {
   </div>
 </div>
 
-          {/* Fotos */}
-          <div className="bg-white p-6 rounded-xl shadow-md mt-6 text-black">
-            <h3 className="font-bold mb-4 text-center border-b pb-2 text-green-800 uppercase">Evidencia Fotográfica</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-              {['Antes', 'Durante', 'Despues', 'Etiqueta'].map(tipo => (
-                <div key={tipo} className="border p-3 rounded-lg bg-gray-50 border-gray-200">
-                  <p className="font-bold mb-2 text-[10px] uppercase text-center text-gray-700">{tipo}</p>
-                  <input type="file" multiple={tipo !== 'Etiqueta'} onChange={e=>handleFotos(e.target.files, `fotos${tipo}`)} className="text-[9px] mb-2 w-full text-black"/>
-                  <div className="space-y-2">
-                    {form[`fotos${tipo}`]?.map((f, i) => (
-                      <div key={i} className="relative aspect-video border rounded bg-white">
-                        <img src={URL.createObjectURL(f)} className="object-contain w-full h-full" />
-                        <button onClick={()=>removeFoto(`fotos${tipo}`, i)} className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center">×</button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
+{/* Sección de Fotos con Deshabilitación */}
+<div className="bg-white p-6 rounded-xl shadow-md mt-6 text-black">
+  <h3 className="font-bold mb-4 text-center border-b pb-2 text-green-800 uppercase">
+    Evidencia Fotográfica (Máx. 2 por etapa)
+  </h3>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+    {['Antes', 'Durante', 'Despues', 'Etiqueta'].map(tipo => {
+      // Calculamos si ya se alcanzó el límite para deshabilitar
+      const limite = tipo === 'Etiqueta' ? 1 : 2;
+      const cantidadActual = form[`fotos${tipo}`]?.length || 0;
+      const estaLleno = cantidadActual >= limite;
+
+      return (
+        <div key={tipo} className="border p-3 rounded-lg bg-gray-50 border-gray-200">
+          <p className="font-bold mb-2 text-[10px] uppercase text-center text-gray-700">
+            {tipo} ({cantidadActual}/{limite})
+          </p>
+          
+          <input 
+            type="file" 
+            multiple={tipo !== 'Etiqueta'} 
+            onChange={e => handleFotos(e.target.files, `fotos${tipo}`)} 
+            // AQUÍ LA DESHABILITACIÓN:
+            disabled={estaLleno}
+            className={`text-[9px] mb-2 w-full text-black ${estaLleno ? 'opacity-30 cursor-not-allowed' : 'cursor-pointer'}`}
+          />
+
+          <div className="space-y-2">
+            {form[`fotos${tipo}`]?.map((f, i) => (
+              <div key={i} className="relative aspect-video border rounded bg-white">
+                <img src={URL.createObjectURL(f)} className="object-contain w-full h-full" />
+                <button 
+                  onClick={() => removeFoto(`fotos${tipo}`, i)} 
+                  className="absolute -top-1 -right-1 bg-red-600 text-white rounded-full w-5 h-5 text-xs flex items-center justify-center shadow-md"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
           </div>
+        </div>
+      );
+    })}
+  </div>
+</div>
 
 {/* Botones Finales */}
 <div className="flex flex-col md:flex-row justify-center items-center gap-4 md:gap-6 mt-12 pb-10">
