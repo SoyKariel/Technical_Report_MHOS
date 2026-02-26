@@ -386,13 +386,14 @@ export default function ServiceReportPage() {
         </div>
       </div>
 
+
 {/* VISTA PDF REPORTE */}
 {/* VISTA PDF REPORTE */}
 <div className="print-only">
-  {/* Header fijo: Se repetirá en cada hoja automáticamente por CSS */}
+  {/* Header fijo: Sin prefix, ruta directa */}
   <div className="header-print">
     <img 
-      src={`${prefix}/Technical_Report_MHOS/header.PNG`} 
+      src="/Technical_Report_MHOS/header.PNG" 
       className="w-full" 
       alt="Header" 
     />
@@ -457,7 +458,7 @@ export default function ServiceReportPage() {
       </table>
     </div>
 
-    {/* 3. CHECKLIST Y DIAGNÓSTICO (LADO A LADO) */}
+    {/* 3. CHECKLIST Y DIAGNÓSTICO */}
     <div className="flex flex-col md:grid md:grid-cols-2 gap-4 mb-4">
       <div className="avoid-break">
         <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Anexo Técnico (Checklist)</h3>
@@ -466,7 +467,7 @@ export default function ServiceReportPage() {
             <div key={i} className="text-[7px] border-b border-gray-200 py-1 uppercase">• {item}</div>
           ))}
           {checklistAire.filter(item => form.checklist[item]).length === 0 && (
-            <p className="text-[8px] italic text-gray-400">Sin actividades registradas.</p>
+            <p className="text-[8px] italic text-gray-400 uppercase">Sin actividades registradas.</p>
           )}
         </div>
       </div>
@@ -481,7 +482,7 @@ export default function ServiceReportPage() {
           </div>
         </div>
         
-        {/* SECCIÓN DE REFACCIONES SEPARADA */}
+        {/* REFACCIONES */}
         <div className="avoid-break">
           <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Refacciones / Accesorios Utilizados</h3>
           <table className="w-full border-collapse border border-black text-[7px]">
@@ -504,7 +505,7 @@ export default function ServiceReportPage() {
           </table>
         </div>
 
-        {/* SECCIÓN DE EQUIPO DE MEDICIÓN SEPARADA */}
+        {/* EQUIPO DE MEDICIÓN */}
         <div className="avoid-break">
           <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Equipo de Medición Utilizado</h3>
           <table className="w-full border-collapse border border-black text-[7px]">
@@ -577,12 +578,12 @@ export default function ServiceReportPage() {
       </table>
     </div>
 
-  </div> {/* Cierre de report-content */}
+  </div>
 
-  {/* Footer fijo: Se repetirá en cada hoja automáticamente por CSS */}
+  {/* Footer fijo: Sin prefix, ruta directa */}
   <div className="footer-print">
     <img 
-      src={`${prefix}/Technical_Report_MHOS/footer.PNG`} 
+      src="/Technical_Report_MHOS/footer.PNG" 
       className="w-full" 
       alt="Footer" 
     />
