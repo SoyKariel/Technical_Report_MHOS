@@ -1,97 +1,70 @@
-/* --- 1. REGLAS GLOBALES --- */
+/* --- CONFIGURACIÓN GLOBAL --- */
 @media print {
+  @page { margin: 0 !important; } /* Elimina URL, Fecha y Título */
+  
   body {
-    background: white !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
     margin: 0 !important;
-    padding: 0 !important;
   }
+
   .no-print { display: none !important; }
 }
 
-/* --- 2. CONFIGURACIÓN FÍSICA DE PÁGINA --- */
-/* Si es reporte: Tamaño Carta */
+/* --- MODO REPORTE (CARTA) --- */
 @media print {
   body:not(.solo-tarjeta) {
-    @page {
-      size: letter;
-      margin: 0 !important;
-    }
-  }
-}
-
-/* Si es tarjeta: Tamaño Presentación (Esto hace que el resto se vea oscuro/negro) */
-@media print {
-  body.solo-tarjeta {
-    @page {
-      size: 90mm 55mm;
-      margin: 0 !important;
-    }
-  }
-}
-
-/* --- 3. DISEÑO DEL REPORTE (VERSION ANTERIOR) --- */
-.print-only { display: none; }
-
-@media print {
-  body:not(.solo-tarjeta) .print-only {
-    display: block !important;
+    @page { size: letter; }
   }
 
-  .print-page {
-    width: 210mm;
-    min-height: 297mm;
-    margin: 0 auto;
-    position: relative;
-    background: white;
+  /* Header y Footer repetidos en cada página */
+  body:not(.solo-tarjeta) .header-print {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 30mm;
+    z-index: 100;
   }
 
-  /* Línea verde al final de cada hoja */
-  .print-page::after {
-    content: "";
-    position: absolute;
+  body:not(.solo-tarjeta) .footer-print {
+    position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
-    height: 6px;
-    background-color: #2F7A4A !important;
-    z-index: 20;
+    height: 20mm;
+    z-index: 100;
   }
 
-  .content-padding {
-    padding: 10mm 15mm 35mm 15mm !important;
-  }
-
-  .footer-fixed {
-    position: absolute;
-    bottom: 6px;
-    left: 0;
-    width: 100%;
-    z-index: 10;
+  /* El contenido del reporte con margen para no chocar con header/footer */
+  body:not(.solo-tarjeta) .report-content {
+    padding: 35mm 15mm 25mm 15mm !important;
+    display: block !important;
   }
 }
 
-/* --- 4. DISEÑO DE LA TARJETA --- */
-.tarjeta-identificacion { display: none; }
-
+/* --- MODO TARJETA (90x55mm) --- */
 @media print {
-  body.solo-tarjeta .print-only,
-  body.solo-tarjeta .print-page {
-    display: none !important;
+  body.solo-tarjeta {
+    @page { size: 90mm 55mm; }
+  }
+
+  body.solo-tarjeta .print-only {
+    display: none !important; /* Oculta reporte */
   }
 
   body.solo-tarjeta .tarjeta-identificacion {
     display: block !important;
+    width: 90mm !important;
+    height: 55mm !important;
   }
 
   .solo-tarjeta .tarjeta-item {
-    display: block !important;
     width: 90mm !important;
     height: 55mm !important;
-    overflow: hidden !important;
     page-break-after: always !important;
+    overflow: hidden;
+    position: relative;
     border: none !important;
-    background: white !important;
   }
 }

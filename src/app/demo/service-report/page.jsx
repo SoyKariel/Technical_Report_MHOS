@@ -36,20 +36,25 @@ const emptyForm = {
   refacciones: [{ descripcion: "", cantidad: "" }]
 };
 
-const imprimirTarjeta = () => {
-  // 1. Aplicamos la clase
-  document.body.classList.add("solo-tarjeta");
-
-  // 2. Esperamos 300ms antes de llamar a la impresión
-  // Esto le da tiempo al navegador móvil de ocultar el reporte y mostrar la tarjeta
+const imprimirReporte = () => {
+  // Limpieza total antes de imprimir reporte
+  document.body.classList.remove("solo-tarjeta");
+  // Pequeña espera para que el DOM se entere del cambio
   setTimeout(() => {
     window.print();
-    
-    // 3. Quitamos la clase después de un segundo para que la pantalla vuelva a la normalidad
+  }, 100);
+};
+
+const imprimirTarjeta = () => {
+  // Forzamos el modo tarjeta
+  document.body.classList.add("solo-tarjeta");
+  setTimeout(() => {
+    window.print();
+    // No quitamos la clase hasta que se cierre el diálogo de impresión
     setTimeout(() => {
       document.body.classList.remove("solo-tarjeta");
     }, 1000);
-  }, 300); 
+  }, 300);
 };
 
 export default function ServiceReportPage() {
@@ -383,119 +388,169 @@ export default function ServiceReportPage() {
 
 {/* VISTA PDF REPORTE */}
 <div className="print-only">
-  <div className="print-page">
-    <header><img src="/Technical_Report_MHOS/header.PNG" className="w-full" /></header>
+  {/* Header fijo para todas las páginas */}
+  <div className="header-print">
+    <img src="/Technical_Report_MHOS/header.PNG" className="w-full" alt="Header" />
+  </div>
+
+  {/* Contenedor principal con margen superior e inferior para no chocar con header/footer */}
+  <div className="report-content text-black">
     
-    <div className="content-padding text-black">
-      
-      <div className="avoid-break">
-        <div className="flex justify-between items-end border-b-2 border-black pb-1 mb-4">
-          <div>
-            <h1 className="text-xl font-bold uppercase">Reporte de Servicio</h1>
-            <p className="text-[10px] font-bold mt-1 uppercase">SERVICIO: {form.servicio}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-red-600 font-bold text-lg leading-none">{form.folio}</p>
-            <p className="text-[9px] font-bold">Fecha: {form.fecha}</p>
-          </div>
+    {/* Encabezado de Folio y Fecha */}
+    <div className="avoid-break">
+      <div className="flex justify-between items-end border-b-2 border-black pb-1 mb-4">
+        <div>
+          <h1 className="text-xl font-bold uppercase">Reporte de Servicio</h1>
+          <p className="text-[10px] font-bold mt-1 uppercase">SERVICIO: {form.servicio}</p>
         </div>
-
-        <table className="w-full text-[10px] mb-4 border border-black border-collapse">
-          <tbody>
-            <tr>
-              <td className="font-bold p-1 bg-gray-100 border border-black w-24">CLIENTE:</td>
-              <td className="p-1 border border-black">{form.cliente}</td>
-              <td className="font-bold p-1 bg-gray-100 border border-black w-24">CONTRATO:</td>
-              <td className="p-1 border border-black">{form.contrato}</td>
-            </tr>
-            <tr>
-              <td className="font-bold p-1 bg-gray-100 border border-black">DIRECCIÓN:</td>
-              <td className="p-1 border border-black">{form.direccion}</td>
-              <td className="font-bold p-1 bg-gray-100 border border-black">PARTIDA:</td>
-              <td className="p-1 border border-black">{form.partida}</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <div className="avoid-break">
-        <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Datos del Equipo Atendido</h3>
-        <table className="w-full border-collapse border border-black text-[8px] mb-4 text-center">
-          <thead>
-            <tr className="bg-gray-100">
-              <th className="border border-black p-1">EQUIPO</th>
-              <th className="border border-black p-1">MARCA</th>
-              <th className="border border-black p-1">MODELO</th>
-              <th className="border border-black p-1">SERIE</th>
-            </tr>
-          </thead>
-          <tbody>
-            {form.equipos.map((eq, i) => (
-              <tr key={i}>
-                <td className="border border-black p-1 uppercase">{eq.equipo}</td>
-                <td className="border border-black p-1 uppercase">{eq.marca}</td>
-                <td className="border border-black p-1 uppercase">{eq.modelo}</td>
-                <td className="border border-black p-1 uppercase">{eq.serie}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-
-      <div className="flex flex-col md:grid md:grid-cols-2 gap-4 mb-4">
-        <div className="avoid-break">
-          <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Anexo Técnico (Checklist)</h3>
-          <div className="border border-black p-2 min-h-[180px]">
-            {checklistAire.filter(item => form.checklist[item]).map((item, i) => (
-              <div key={i} className="text-[7px] border-b border-gray-200 py-1 uppercase">• {item}</div>
-            ))}
-          </div>
-        </div>
-
-        <div className="space-y-4">
-          <div className="avoid-break">
-            <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Diagnóstico y Notas</h3>
-            <div className="border border-black p-2 text-[8px] min-h-[80px]">
-              <p className="mb-1"><strong>Falla:</strong> {form.falla}</p>
-              <p className="mb-1"><strong>Condiciones:</strong> {form.condiciones}</p>
-              <p><strong>Trabajos:</strong> {form.trabajos}</p>
-            </div>
-          </div>
-          
-          <div className="avoid-break">
-            <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Refacciones y Medición</h3>
-            <table className="w-full border-collapse border border-black text-[7px]">
-              <tbody>
-                {form.refacciones.map((ref, i) => (
-                  <tr key={i}><td className="border border-black p-1">{ref.descripcion}</td><td className="w-8 border border-black p-1">{ref.cantidad}</td></tr>
-                ))}
-                {form.medicion.map((med, i) => (
-                  <tr key={i}><td colSpan="2" className="border border-black p-1 uppercase">{med.equipo} - S/N: {med.serie}</td></tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+        <div className="text-right">
+          <p className="text-red-600 font-bold text-lg leading-none">{form.folio}</p>
+          <p className="text-[9px] font-bold">Fecha: {form.fecha}</p>
         </div>
       </div>
 
-      <div className="avoid-break seccion-firmas mt-4">
-        <table className="w-full border-collapse border border-black text-[8px] text-center">
-          <tbody>
-            <tr className="h-16">
-              <td className="border border-black p-2 w-1/4 align-bottom"><div className="border-t border-black pt-1">Firma Técnico</div></td>
-              <td className="border border-black p-2 w-1/4 align-bottom"><div className="border-t border-black pt-1">Firma Cliente</div></td>
-              <td className="border border-black p-2 w-1/4 align-bottom">
-                <div className="border-t border-black pt-1 font-bold">Ing. Adrián Martínez Robles</div>
-                <div>Valida Servicio</div>
-              </td>
-              <td className="border border-black p-2 w-1/4 align-top text-gray-200 italic">Sello Unidad</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
+      {/* Tabla de Cliente */}
+      <table className="w-full text-[10px] mb-4 border border-black border-collapse">
+        <tbody>
+          <tr>
+            <td className="font-bold p-1 bg-gray-100 border border-black w-24">CLIENTE:</td>
+            <td className="p-1 border border-black">{form.cliente}</td>
+            <td className="font-bold p-1 bg-gray-100 border border-black w-24">CONTRATO:</td>
+            <td className="p-1 border border-black">{form.contrato}</td>
+          </tr>
+          <tr>
+            <td className="font-bold p-1 bg-gray-100 border border-black">DIRECCIÓN:</td>
+            <td className="p-1 border border-black">{form.direccion}</td>
+            <td className="font-bold p-1 bg-gray-100 border border-black">PARTIDA:</td>
+            <td className="p-1 border border-black">{form.partida}</td>
+          </tr>
+        </tbody>
+      </table>
     </div>
-    <footer className="footer-fixed"><img src="/Technical_Report_MHOS/footer.PNG" className="w-full" /></footer>
+
+    {/* Tabla de Equipos */}
+    <div className="avoid-break">
+      <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Datos del Equipo Atendido</h3>
+      <table className="w-full border-collapse border border-black text-[8px] mb-4 text-center">
+        <thead>
+          <tr className="bg-gray-100">
+            <th className="border border-black p-1">EQUIPO</th>
+            <th className="border border-black p-1">MARCA</th>
+            <th className="border border-black p-1">MODELO</th>
+            <th className="border border-black p-1">SERIE</th>
+          </tr>
+        </thead>
+        <tbody>
+          {form.equipos.map((eq, i) => (
+            <tr key={i}>
+              <td className="border border-black p-1 uppercase">{eq.equipo}</td>
+              <td className="border border-black p-1 uppercase">{eq.marca}</td>
+              <td className="border border-black p-1 uppercase">{eq.modelo}</td>
+              <td className="border border-black p-1 uppercase">{eq.serie}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+
+    {/* Sección de Checklist y Diagnóstico */}
+    <div className="flex flex-col md:grid md:grid-cols-2 gap-4 mb-4">
+      <div className="avoid-break">
+        <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Anexo Técnico (Checklist)</h3>
+        <div className="border border-black p-2 min-h-[180px]">
+          {checklistAire.filter(item => form.checklist[item]).map((item, i) => (
+            <div key={i} className="text-[7px] border-b border-gray-200 py-1 uppercase">• {item}</div>
+          ))}
+          {checklistAire.filter(item => form.checklist[item]).length === 0 && (
+            <p className="text-[8px] italic text-gray-400">Sin actividades marcadas.</p>
+          )}
+        </div>
+      </div>
+
+      <div className="space-y-4">
+        <div className="avoid-break">
+          <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Diagnóstico y Notas</h3>
+          <div className="border border-black p-2 text-[8px] min-h-[80px]">
+            <p className="mb-1"><strong>Falla:</strong> {form.falla}</p>
+            <p className="mb-1"><strong>Condiciones:</strong> {form.condiciones}</p>
+            <p><strong>Trabajos:</strong> {form.trabajos}</p>
+          </div>
+        </div>
+        
+        <div className="avoid-break">
+          <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-1 uppercase text-center">Refacciones y Medición</h3>
+          <table className="w-full border-collapse border border-black text-[7px]">
+            <tbody>
+              {form.refacciones.map((ref, i) => (
+                <tr key={i}>
+                  <td className="border border-black p-1">{ref.descripcion}</td>
+                  <td className="w-8 border border-black p-1">{ref.cantidad}</td>
+                </tr>
+              ))}
+              {form.medicion.map((med, i) => (
+                <tr key={i}>
+                  <td colSpan="2" className="border border-black p-1 uppercase">{med.equipo} - S/N: {med.serie}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    {/* Evidencia Fotográfica (Max 2 por etapa) */}
+    <div className="avoid-break mt-4">
+      <h3 className="bg-black text-white text-[9px] px-2 py-1 font-bold mb-2 uppercase text-center">Evidencia Fotográfica</h3>
+      <div className="grid grid-cols-2 gap-4">
+        {['Antes', 'Durante', 'Despues', 'Etiqueta'].map(tipo => (
+          form[`fotos${tipo}`]?.length > 0 && (
+            <div key={tipo} className="border border-gray-300 p-1">
+              <p className="text-[7px] font-bold uppercase mb-1 bg-gray-50 px-1">{tipo}</p>
+              <div className="grid grid-cols-2 gap-1">
+                {form[`fotos${tipo}`].map((foto, idx) => (
+                  <div key={idx} className="border border-black aspect-video overflow-hidden">
+                    <img 
+                      src={URL.createObjectURL(foto)} 
+                      className="object-contain w-full h-full" 
+                      alt={tipo}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+          )
+        ))}
+      </div>
+    </div>
+
+    {/* Sección de Firmas */}
+    <div className="avoid-break mt-6">
+      <table className="w-full border-collapse border border-black text-[8px] text-center">
+        <tbody>
+          <tr className="h-16">
+            <td className="border border-black p-2 w-1/4 align-bottom">
+              <div className="border-t border-black pt-1">Firma Técnico</div>
+            </td>
+            <td className="border border-black p-2 w-1/4 align-bottom">
+              <div className="border-t border-black pt-1">Firma Cliente</div>
+            </td>
+            <td className="border border-black p-2 w-1/4 align-bottom">
+              <div className="border-t border-black pt-1 font-bold">Ing. Adrián Martínez Robles</div>
+              <div>Valida Servicio</div>
+            </td>
+            <td className="border border-black p-2 w-1/4 align-top text-gray-200 italic text-[6px]">
+              Sello de la Unidad
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </div> {/* Cierre de report-content */}
+
+  {/* Footer fijo para todas las páginas */}
+  <div className="footer-print">
+    <img src="/Technical_Report_MHOS/footer.PNG" className="w-full" alt="Footer" />
   </div>
 </div>
 
