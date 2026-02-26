@@ -1,70 +1,101 @@
-/* --- REGLAS GENERALES DE IMPRESIÓN --- */
+/* --- 1. REGLAS GLOBALES --- */
 @media print {
   body {
     background: white !important;
     -webkit-print-color-adjust: exact !important;
     print-color-adjust: exact !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
   .no-print {
     display: none !important;
   }
-
-  /* ELIMINAR URL, FECHA Y TÍTULO DE LAS ESQUINAS */
-  @page {
-    margin: 0 !important; /* Elimina el espacio donde el navegador pone la URL y fecha */
-  }
 }
 
-/* --- REGLAS ESPECÍFICAS DEL REPORTE TÉCNICO --- */
+/* --- 2. FORMATO REPORTE (HOJA CARTA) --- */
 .print-only {
   display: none;
 }
 
+/* Cuando NO es modo tarjeta, configuramos Hoja Carta */
 @media print {
-  /* Si NO estamos en modo "solo-tarjeta", reporte normal tamaño Carta */
+  body:not(.solo-tarjeta) {
+    width: 210mm;
+  }
+
   body:not(.solo-tarjeta) .print-only {
     display: block !important;
   }
 
-  @page {
-    size: letter; /* Hoja carta para el reporte */
-    margin: 10mm !important;
-  }
-
-  /* Ocultar reporte si estamos en modo tarjeta */
-  body.solo-tarjeta .print-only,
-  body.solo-tarjeta .print-page,
-  body.solo-tarjeta header,
-  body.solo-tarjeta footer {
-    display: none !important;
-  }
-
-  .print-page {
-    width: 210mm;
-    min-height: 297mm;
-    margin: 0 auto;
+  /* Línea verde en el borde inferior de cada hoja */
+  body:not(.solo-tarjeta) .print-page::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 6px;
+    background-color: #2F7A4A !important;
+    z-index: 20;
   }
 }
 
-/* --- REGLAS ESPECÍFICAS DE LAS TARJETAS (IMPRESORA ESPECIAL) --- */
+/* Configuración de página para el Reporte */
+@media print {
+  @page {
+    size: letter;
+    margin: 0; /* Controlamos márgenes internos con padding */
+  }
+}
+
+.print-page {
+  width: 210mm;
+  min-height: 297mm;
+  margin: 0 auto;
+  position: relative;
+  background: white;
+}
+
+.content-padding {
+  padding: 10mm 15mm 25mm 15mm !important; /* Más padding abajo por el footer */
+}
+
+.footer-fixed {
+  position: absolute;
+  bottom: 6px; /* Justo arriba de la línea verde */
+  left: 0;
+  width: 100%;
+  z-index: 10;
+}
+
+/* --- 3. FORMATO TARJETA (90x55mm) --- */
 .tarjeta-identificacion {
   display: none;
 }
 
 @media print {
-  /* Forzamos el tamaño exacto de la tarjeta de presentación */
-  @page {
-    size: 90mm 55mm; /* Tamaño físico de la tarjeta */
-    margin: 0 !important;   /* Elimina encabezados y pies de página del navegador */
+  /* Ocultar el reporte si el body tiene la clase solo-tarjeta */
+  body.solo-tarjeta .print-only,
+  body.solo-tarjeta .print-page {
+    display: none !important;
   }
 
+  /* Cambiar el tamaño del papel a Tarjeta */
   body.solo-tarjeta {
     width: 90mm !important;
     height: 55mm !important;
   }
 
-  .solo-tarjeta .tarjeta-identificacion {
+  /* Regla de página específica para la tarjeta */
+  body.solo-tarjeta {
+    @page {
+      size: 90mm 55mm;
+      margin: 0 !important;
+    }
+  }
+
+  body.solo-tarjeta .tarjeta-identificacion {
     display: block !important;
     width: 90mm !important;
   }
@@ -73,12 +104,13 @@
     display: block !important;
     width: 90mm !important;
     height: 55mm !important;
-    page-break-after: always !important; /* Cada equipo es una tarjeta nueva en la impresora */
     position: relative !important;
-    padding: 0 !important; 
-    margin: 0 !important;
     overflow: hidden !important;
+    page-break-after: always !important;
+    break-after: page !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
     background: white !important;
-    border: none !important; /* Sin bordes para que no salgan rayas en la tarjeta */
   }
 }
