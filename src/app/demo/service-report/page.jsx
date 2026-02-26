@@ -534,10 +534,11 @@ export default function ServiceReportPage() {
     </div> {/* Fin de content-padding */}
 
     {/* Footer fijo con imagen */}
-    <footer className="footer-fixed">
-      <img src="/Technical_Report_MHOS/footer.PNG" className="w-full object-contain" alt="Footer" />
-    </footer>
-  </div>
+    <footer className="footer-container">
+    <img src="/Technical_Report_MHOS/footer.PNG" className="footer-image" alt="Footer" />
+    <div className="base-line-verde"></div>
+  </footer>
+</div>
 </div>
 
 {/* VISTA DE TARJETAS DE IDENTIFICACIÓN OPTIMIZADA */}

@@ -11,6 +11,11 @@
   .no-print {
     display: none !important;
   }
+
+  /* Eliminar encabezados automáticos del navegador (URL/Fecha) */
+  @page {
+    margin: 0 !important;
+  }
 }
 
 /* --- 2. FORMATO REPORTE (HOJA CARTA) --- */
@@ -18,8 +23,8 @@
   display: none;
 }
 
-/* Cuando NO es modo tarjeta, configuramos Hoja Carta */
 @media print {
+  /* Configuración cuando se imprime el Reporte Normal */
   body:not(.solo-tarjeta) {
     width: 210mm;
   }
@@ -28,7 +33,15 @@
     display: block !important;
   }
 
-  /* Línea verde en el borde inferior de cada hoja */
+  /* Tamaño carta para el reporte */
+  body:not(.solo-tarjeta) {
+    @page {
+      size: letter;
+      margin: 0 !important;
+    }
+  }
+
+  /* Línea verde decorativa al final de cada página del reporte */
   body:not(.solo-tarjeta) .print-page::after {
     content: "";
     position: absolute;
@@ -41,14 +54,6 @@
   }
 }
 
-/* Configuración de página para el Reporte */
-@media print {
-  @page {
-    size: letter;
-    margin: 0; /* Controlamos márgenes internos con padding */
-  }
-}
-
 .print-page {
   width: 210mm;
   min-height: 297mm;
@@ -57,16 +62,25 @@
   background: white;
 }
 
+/* Espacio inferior para que el contenido no pise el footer */
 .content-padding {
-  padding: 10mm 15mm 25mm 15mm !important; /* Más padding abajo por el footer */
+  padding: 10mm 15mm 40mm 15mm !important; 
 }
 
+/* Contenedor del Footer: Imagen + Línea Verde */
 .footer-fixed {
   position: absolute;
-  bottom: 6px; /* Justo arriba de la línea verde */
+  bottom: 0;
   left: 0;
   width: 100%;
   z-index: 10;
+  display: flex;
+  flex-direction: column;
+}
+
+.footer-fixed img {
+  width: 100%;
+  display: block; /* Quita el pequeño espacio blanco debajo de imágenes */
 }
 
 /* --- 3. FORMATO TARJETA (90x55mm) --- */
@@ -75,19 +89,18 @@
 }
 
 @media print {
-  /* Ocultar el reporte si el body tiene la clase solo-tarjeta */
+  /* Si estamos en modo tarjeta, ocultamos el reporte técnico */
   body.solo-tarjeta .print-only,
   body.solo-tarjeta .print-page {
     display: none !important;
   }
 
-  /* Cambiar el tamaño del papel a Tarjeta */
+  /* Forzamos el tamaño exacto para la impresora de tarjetas */
   body.solo-tarjeta {
     width: 90mm !important;
     height: 55mm !important;
   }
 
-  /* Regla de página específica para la tarjeta */
   body.solo-tarjeta {
     @page {
       size: 90mm 55mm;
